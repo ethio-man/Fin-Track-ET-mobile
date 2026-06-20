@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "FinTrack ET",
+    "slug": "fintrack-et",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/fintrack_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A1628"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fintrack.et"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/fintrack_logo.png",
+        "backgroundColor": "#0A1628"
+      },
+      "package": "com.fintrack.et"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#0A1628"
+    }
+  }
+}

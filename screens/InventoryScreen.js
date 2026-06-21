@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ProductCard from '../components/ProductCard';
 import { mockInventory } from '../data/mockInventory';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function InventoryScreen() {
   const [search, setSearch] = useState('');
@@ -39,13 +42,46 @@ export default function InventoryScreen() {
           <ProductCard product={item} onPress={() => {}} />
         )}
         ListHeaderComponent={
-          <View style={styles.alertCard}>
+          <>
+            <View style={styles.alertCard}>
             <View style={styles.alertHeader}>
               <MaterialCommunityIcons name="alert" size={20} color={Colors.warning} />
               <Text style={styles.alertTitle}>Low Stock Alerts</Text>
             </View>
-            <Text style={styles.alertText}>1 item requires your attention</Text>
-          </View>
+              <Text style={styles.alertText}>1 item requires your attention</Text>
+            </View>
+            <View style={[styles.alertCard, { borderColor: Colors.borderCore, padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
+              <Text style={[styles.alertTitle, { marginBottom: 16 }]}>Stock Levels</Text>
+              <BarChart
+                data={{
+                  labels: mockInventory.slice(0, 4).map(p => p.name.split(' ')[0]), // Short names
+                  datasets: [
+                    {
+                      data: mockInventory.slice(0, 4).map(p => p.stock)
+                    }
+                  ]
+                }}
+                width={screenWidth - 32}
+                height={220}
+                yAxisLabel=""
+                chartConfig={{
+                  backgroundColor: Colors.bgPanel,
+                  backgroundGradientFrom: Colors.bgPanel,
+                  backgroundGradientTo: Colors.bgPanel,
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(165, 180, 252, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                  style: {
+                    borderRadius: 16
+                  }
+                }}
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16
+                }}
+              />
+            </View>
+          </>
         }
         ListEmptyComponent={
           <View style={styles.empty}>

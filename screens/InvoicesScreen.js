@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import InvoiceDetailModal from '../components/InvoiceDetailModal';
 
 const MOCK_INVOICES = [
   { id: 'INV-001', client: 'Abebe Bekele', date: 'Oct 12, 2023', amount: '4,500', status: 'Paid' },
@@ -12,6 +13,13 @@ const MOCK_INVOICES = [
 
 export default function InvoicesScreen() {
   const [search, setSearch] = useState('');
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleInvoicePress = (invoice) => {
+    setSelectedInvoice(invoice);
+    setModalVisible(true);
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -50,7 +58,7 @@ export default function InvoicesScreen() {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.invoiceCard}>
+          <TouchableOpacity style={styles.invoiceCard} onPress={() => handleInvoicePress(item)}>
             <View style={styles.invoiceHeader}>
               <Text style={styles.invoiceId}>{item.id}</Text>
               <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
@@ -71,6 +79,12 @@ export default function InvoicesScreen() {
       <TouchableOpacity style={styles.fab}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <InvoiceDetailModal 
+        visible={modalVisible} 
+        invoice={selectedInvoice} 
+        onClose={() => setModalVisible(false)} 
+      />
     </SafeAreaView>
   );
 }

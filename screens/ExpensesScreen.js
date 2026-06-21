@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ExpenseItem from '../components/ExpenseItem';
 import { mockExpenses } from '../data/mockExpenses';
+import { expenseBreakdown } from '../data/mockDashboard';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function ExpensesScreen() {
   const [search, setSearch] = useState('');
@@ -42,6 +46,25 @@ export default function ExpensesScreen() {
           <View style={styles.summaryCard}>
             <Text style={styles.summaryTitle}>Total Expenses This Month</Text>
             <Text style={styles.summaryAmount}>ETB 71,450</Text>
+            <PieChart
+              data={expenseBreakdown.map(item => ({
+                name: item.name,
+                population: item.value,
+                color: item.color,
+                legendFontColor: Colors.textSec,
+                legendFontSize: 12
+              }))}
+              width={screenWidth - 72}
+              height={180}
+              chartConfig={{
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`
+              }}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[10, 0]}
+              absolute
+            />
           </View>
         }
         ListEmptyComponent={

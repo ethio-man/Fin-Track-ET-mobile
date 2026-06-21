@@ -1,10 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Dimensions } from 'react-native';
+import { LineChart, PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import KPICard from '../components/KPICard';
 import TransactionItem from '../components/TransactionItem';
-import { kpiData, recentTransactions } from '../data/mockDashboard';
+import { kpiData, recentTransactions, weeklyProfitData, expenseBreakdown } from '../data/mockDashboard';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function DashboardScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -71,6 +74,78 @@ export default function DashboardScreen() {
             {recentTransactions.map((tx, index) => (
               <TransactionItem key={tx.id} transaction={tx} />
             ))}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Weekly Performance</Text>
+          <View style={[styles.card, { padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
+            <LineChart
+              data={{
+                labels: weeklyProfitData.map(d => d.day),
+                datasets: [
+                  {
+                    data: weeklyProfitData.map(d => d.revenue),
+                    color: (opacity = 1) => `rgba(165, 180, 252, ${opacity})`, // Indigo
+                    strokeWidth: 2
+                  },
+                  {
+                    data: weeklyProfitData.map(d => d.profit),
+                    color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`, // Green
+                    strokeWidth: 2
+                  }
+                ],
+                legend: ["Revenue", "Profit"]
+              }}
+              width={screenWidth - 32} // from react-native
+              height={220}
+              yAxisLabel="ETB "
+              chartConfig={{
+                backgroundColor: Colors.bgPanel,
+                backgroundGradientFrom: Colors.bgPanel,
+                backgroundGradientTo: Colors.bgPanel,
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`, // Muted text for grid/labels
+                labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                },
+                propsForDots: {
+                  r: "4",
+                  strokeWidth: "2",
+                }
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16
+              }}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Expense Breakdown</Text>
+          <View style={styles.card}>
+            <PieChart
+              data={expenseBreakdown.map(item => ({
+                name: item.name,
+                population: item.value,
+                color: item.color,
+                legendFontColor: Colors.textSec,
+                legendFontSize: 12
+              }))}
+              width={screenWidth - 64}
+              height={200}
+              chartConfig={{
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`
+              }}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[10, 0]}
+              absolute
+            />
           </View>
         </View>
         

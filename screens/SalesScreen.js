@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import SaleCard from '../components/SaleCard';
-import { mockSales } from '../data/mockSales';
+import { mockSales, periodComparisonData } from '../data/mockSales';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function SalesScreen() {
   const [search, setSearch] = useState('');
@@ -38,6 +41,47 @@ export default function SalesScreen() {
         renderItem={({ item }) => (
           <SaleCard sale={item} onPress={() => {}} />
         )}
+        ListHeaderComponent={
+          <View style={styles.chartCard}>
+            <Text style={styles.chartTitle}>Sales Trend</Text>
+            <LineChart
+              data={{
+                labels: periodComparisonData.map(d => d.time),
+                datasets: [
+                  {
+                    data: periodComparisonData.map(d => d.revenue),
+                    color: (opacity = 1) => `rgba(165, 180, 252, ${opacity})`,
+                    strokeWidth: 2
+                  }
+                ]
+              }}
+              width={screenWidth - 32}
+              height={220}
+              yAxisLabel="ETB "
+              chartConfig={{
+                backgroundColor: Colors.bgPanel,
+                backgroundGradientFrom: Colors.bgPanel,
+                backgroundGradientTo: Colors.bgPanel,
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                },
+                propsForDots: {
+                  r: "4",
+                  strokeWidth: "2",
+                }
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+                alignSelf: 'center'
+              }}
+            />
+          </View>
+        }
         ListEmptyComponent={
           <View style={styles.empty}>
             <MaterialCommunityIcons name="inbox-outline" size={48} color={Colors.textMute} />
@@ -90,6 +134,22 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  chartCard: {
+    backgroundColor: Colors.bgPanel,
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderCore,
+    alignItems: 'center',
+  },
+  chartTitle: {
+    color: Colors.textCore,
+    fontSize: 18,
+    fontWeight: 'bold',
+    alignSelf: 'flex-start',
+    marginBottom: 8,
   },
   listContent: {
     padding: 16,

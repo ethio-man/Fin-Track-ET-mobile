@@ -1,7 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+
+import { weeklyProfitData } from '../data/mockDashboard';
+
+const screenWidth = Dimensions.get('window').width;
 
 const REPORTS = [
   { id: '1', title: 'Sales Summary', desc: 'Daily, weekly, and monthly sales data', icon: 'trending-up', color: Colors.success },
@@ -16,9 +21,35 @@ export default function ReportsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>Monthly Overview</Text>
-          <View style={styles.chartPlaceholder}>
-            <MaterialCommunityIcons name="chart-bar" size={64} color={Colors.accentSoft} />
-            <Text style={styles.chartText}>Interactive charts coming soon</Text>
+          <View style={{ alignItems: 'center' }}>
+            <BarChart
+              data={{
+                labels: weeklyProfitData.map(d => d.day),
+                datasets: [
+                  {
+                    data: weeklyProfitData.map(d => d.revenue)
+                  }
+                ]
+              }}
+              width={screenWidth - 72}
+              height={220}
+              yAxisLabel="ETB "
+              chartConfig={{
+                backgroundColor: Colors.bgPanel,
+                backgroundGradientFrom: Colors.bgPanel,
+                backgroundGradientTo: Colors.bgPanel,
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(165, 180, 252, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                }
+              }}
+              style={{
+                marginVertical: 8,
+                borderRadius: 16
+              }}
+            />
           </View>
         </View>
 

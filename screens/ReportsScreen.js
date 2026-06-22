@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 import { weeklyProfitData } from '../data/mockDashboard';
+import ReportSummaryModal from '../components/ReportSummaryModal';
+import { generateHTMLReport } from '../utils/ReportGenerator';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -20,6 +24,50 @@ export default function ReportsScreen() {
   const { colors = Colors, currencyPrefix } = useApp();
   const styles = createStyles(colors);
   const REPORTS = getReports(colors);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+
+  const handleOpenModal = (report) => {
+    setSelectedReport(report.title);
+    setModalVisible(true);
+  };
+
+  const handleGenerateOverallReport = async () => {
+    try {
+      const settings = {
+        companyName: 'Girma Trading PLC',
+        companyAddress: 'Bole Road, Addis Ababa, Ethiopia',
+        companyContact: '+251 11 234 5678',
+        companyEmail: 'contact@girmatrading.et',
+        reportTitle: 'Complete Financial Report',
+        year: '2025',
+        preparedByName: 'Abebe Girma',
+        preparedByTitle: 'Business Owner',
+        preparedByContact: '+251 91 234 5678',
+        preparedForName: 'Internal Management',
+        preparedForTitle: 'Executive Team',
+        preparedForContact: 'N/A',
+        accentColor: colors.accent,
+      };
+
+      const htmlContent = generateHTMLReport('ALL', settings, currencyPrefix);
+
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Share Financial Report PDF',
+        });
+      }
+    } catch (error) {
+      console.error('Error generating overall PDF:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
@@ -58,11 +106,17 @@ export default function ReportsScreen() {
           </View>
         </View>
 
-        <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Available Reports</Text>
+        <View style={styles.headerRow}>
+          <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Available Reports</Text>
+        </View>
         
         <View style={styles.grid}>
           {REPORTS.map(report => (
-            <TouchableOpacity key={report.id} style={[styles.reportCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+            <TouchableOpacity 
+              key={report.id} 
+              style={[styles.reportCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}
+              onPress={() => handleOpenModal(report)}
+            >
               <View style={[styles.iconContainer, { backgroundColor: `${report.color}20` }]}>
                 <MaterialCommunityIcons name={report.icon} size={28} color={report.color} />
               </View>
@@ -71,7 +125,18 @@ export default function ReportsScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        <TouchableOpacity style={styles.generateBtn} onPress={handleGenerateOverallReport}>
+          <MaterialCommunityIcons name="file-chart" size={24} color="#FFF" />
+          <Text style={styles.generateBtnText}>Generate Overall Financial Report</Text>
+        </TouchableOpacity>
       </ScrollView>
+
+      <ReportSummaryModal
+        visible={modalVisible}
+        reportType={selectedReport}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -98,26 +163,16 @@ const createStyles = (colors) => StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  chartPlaceholder: {
-    height: 150,
-    backgroundColor: colors.bgPanelInner,
-    borderRadius: 12,
-    justifyContent: 'center',
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    borderStyle: 'dashed',
-  },
-  chartText: {
-    color: colors.textMute,
-    marginTop: 8,
-    fontSize: 14,
+    marginBottom: 16,
   },
   sectionTitle: {
     color: colors.textCore,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
   },
   grid: {
     flexDirection: 'row',
@@ -150,5 +205,20 @@ const createStyles = (colors) => StyleSheet.create({
     color: colors.textSec,
     fontSize: 12,
     lineHeight: 18,
+  },
+  generateBtn: {
+    backgroundColor: colors.accent,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 24,
+    gap: 8,
+  },
+  generateBtnText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

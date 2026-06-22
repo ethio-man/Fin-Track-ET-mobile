@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 
@@ -178,6 +179,20 @@ export default function BusinessDetailsScreen() {
   const [logoUri, setLogoUri] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  React.useEffect(() => {
+    const loadBiz = async () => {
+      try {
+        const storedBiz = await AsyncStorage.getItem('@business');
+        const storedLogo = await AsyncStorage.getItem('@logoUri');
+        if (storedBiz) setBiz(JSON.parse(storedBiz));
+        if (storedLogo) setLogoUri(storedLogo);
+      } catch (error) {
+        console.error('Failed to load business data', error);
+      }
+    };
+    loadBiz();
+  }, []);
+
   const set = (key) => (val) => setBiz((b) => ({ ...b, [key]: val }));
 
   // ── Logo picker ───────────────────────────────
@@ -229,7 +244,7 @@ export default function BusinessDetailsScreen() {
   };
 
   // ── Save ──────────────────────────────────────
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!biz.businessName.trim()) {
       Alert.alert('Required', 'Business name is required.');
       return;
@@ -239,10 +254,22 @@ export default function BusinessDetailsScreen() {
       return;
     }
     setSaving(true);
-    setTimeout(() => {
+    
+    try {
+      await AsyncStorage.setItem('@business', JSON.stringify(biz));
+      if (logoUri) {
+        await AsyncStorage.setItem('@logoUri', logoUri);
+      } else {
+        await AsyncStorage.removeItem('@logoUri');
+      }
+      setTimeout(() => {
+        setSaving(false);
+        Alert.alert('Saved', 'Business details have been updated.');
+      }, 800);
+    } catch (error) {
       setSaving(false);
-      Alert.alert('Saved', 'Business details have been updated.');
-    }, 800);
+      Alert.alert('Error', 'Failed to save business details.');
+    }
   };
 
   return (

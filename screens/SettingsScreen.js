@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, TouchableOpacity,
-  ScrollView, Switch, Modal, Pressable,
+  ScrollView, Switch, Modal, Pressable, Image
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApp, CURRENCIES } from '../context/AppContext';
 import DarkColors from '../theme/colors';
 
@@ -60,7 +62,8 @@ function CurrencyModal({ visible, onClose, current, onSelect }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Profile Header shortcut
 // ─────────────────────────────────────────────────────────────────────────────
-function ProfileHeader({ colors, onPress }) {
+function ProfileHeader({ colors, onPress, profile, avatarUri }) {
+  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase();
   return (
     <TouchableOpacity
       style={[styles.profileHeader, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}
@@ -68,11 +71,15 @@ function ProfileHeader({ colors, onPress }) {
       activeOpacity={0.8}
     >
       <View style={[styles.profileAvatar, { backgroundColor: colors.accent, borderColor: colors.accentLight }]}>
-        <Text style={styles.profileInitials}>AG</Text>
+        {avatarUri ? (
+          <Image source={{ uri: avatarUri }} style={{ width: 52, height: 52, borderRadius: 26 }} />
+        ) : (
+          <Text style={styles.profileInitials}>{initials}</Text>
+        )}
       </View>
       <View style={styles.profileInfo}>
-        <Text style={[styles.profileName, { color: colors.textCore }]}>Abebe Girma</Text>
-        <Text style={[styles.profileEmail, { color: colors.textSec }]}>abebe.girma@fintrack.et</Text>
+        <Text style={[styles.profileName, { color: colors.textCore }]}>{profile.firstName} {profile.lastName}</Text>
+        <Text style={[styles.profileEmail, { color: colors.textSec }]}>{profile.email}</Text>
       </View>
       <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textMute} />
     </TouchableOpacity>
@@ -91,6 +98,24 @@ export default function SettingsScreen({ navigation }) {
   } = useApp();
 
   const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+  const [profile, setProfile] = useState({ firstName: 'Abebe', lastName: 'Girma', email: 'abebe.girma@fintrack.et' });
+  const [avatarUri, setAvatarUri] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadProfile = async () => {
+        try {
+          const storedProfile = await AsyncStorage.getItem('@profile');
+          const storedAvatar = await AsyncStorage.getItem('@avatarUri');
+          if (storedProfile) setProfile(JSON.parse(storedProfile));
+          if (storedAvatar) setAvatarUri(storedAvatar);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      loadProfile();
+    }, [])
+  );
 
   const handleItemPress = (item) => {
     if (item.type !== 'link') return;
@@ -140,7 +165,7 @@ export default function SettingsScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.content}>
 
         {/* Profile header */}
-        <ProfileHeader colors={colors} onPress={() => navigation.navigate('Profile')} />
+        <ProfileHeader colors={colors} onPress={() => navigation.navigate('Profile')} profile={profile} avatarUri={avatarUri} />
 
         {SETTING_GROUPS.map((group, gIndex) => (
           <View key={gIndex} style={styles.group}>

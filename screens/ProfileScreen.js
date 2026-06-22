@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 
@@ -97,6 +98,20 @@ export default function ProfileScreen() {
   const [avatarUri, setAvatarUri] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const storedProfile = await AsyncStorage.getItem('@profile');
+        const storedAvatar = await AsyncStorage.getItem('@avatarUri');
+        if (storedProfile) setProfile(JSON.parse(storedProfile));
+        if (storedAvatar) setAvatarUri(storedAvatar);
+      } catch (error) {
+        console.error('Failed to load profile data', error);
+      }
+    };
+    loadProfile();
+  }, []);
+
   const set = (key) => (val) => setProfile((p) => ({ ...p, [key]: val }));
 
   const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase();
@@ -150,7 +165,7 @@ export default function ProfileScreen() {
   };
 
   // ── Save ──────────────────────────────────────
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!profile.firstName.trim() || !profile.lastName.trim()) {
       Alert.alert('Required', 'First and last name are required.');
       return;
@@ -160,10 +175,22 @@ export default function ProfileScreen() {
       return;
     }
     setSaving(true);
-    setTimeout(() => {
+    
+    try {
+      await AsyncStorage.setItem('@profile', JSON.stringify(profile));
+      if (avatarUri) {
+        await AsyncStorage.setItem('@avatarUri', avatarUri);
+      } else {
+        await AsyncStorage.removeItem('@avatarUri');
+      }
+      setTimeout(() => {
+        setSaving(false);
+        Alert.alert('Saved', 'Your profile has been updated.');
+      }, 800);
+    } catch (error) {
       setSaving(false);
-      Alert.alert('Saved', 'Your profile has been updated.');
-    }, 800);
+      Alert.alert('Error', 'Failed to save profile data.');
+    }
   };
 
   return (

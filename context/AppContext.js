@@ -15,7 +15,7 @@ const AppContext = createContext(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AppProvider({ children }) {
   const [currency, setCurrency] = useState('ETB');
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   // Resolved color palette based on current theme

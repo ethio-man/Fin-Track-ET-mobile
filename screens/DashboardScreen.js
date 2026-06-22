@@ -1,8 +1,9 @@
 import React from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Dimensions, TouchableOpacity } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import KPICard from '../components/KPICard';
 import TransactionItem from '../components/TransactionItem';
 import { kpiData, recentTransactions, weeklyProfitData, expenseBreakdown } from '../data/mockDashboard';
@@ -10,6 +11,8 @@ import { kpiData, recentTransactions, weeklyProfitData, expenseBreakdown } from 
 const screenWidth = Dimensions.get('window').width;
 
 export default function DashboardScreen({ navigation }) {
+  const { colors = Colors, currencyPrefix } = useApp();
+  const styles = createStyles(colors);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -18,16 +21,16 @@ export default function DashboardScreen({ navigation }) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accentLight} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accentLight} />
         }
       >
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hey Mariana - here's what's happening today</Text>
-          <Text style={styles.title}>Financial Overview</Text>
+          <Text style={[styles.greeting, { color: colors.textSec }]}>Hey Mariana - here's what's happening today</Text>
+          <Text style={[styles.title, { color: colors.textCore }]}>Financial Overview</Text>
         </View>
 
         <View style={styles.kpiGrid}>
@@ -37,7 +40,7 @@ export default function DashboardScreen({ navigation }) {
             change={kpiData.todaysSales.change} 
             isPositive={kpiData.todaysSales.isPositive} 
             icon="cart-outline" 
-            color={Colors.chart.indigo} 
+            color={colors.chart.indigo} 
           />
           <KPICard 
             title="PROFIT" 
@@ -45,7 +48,7 @@ export default function DashboardScreen({ navigation }) {
             change={kpiData.profit.change} 
             isPositive={kpiData.profit.isPositive} 
             icon="trending-up" 
-            color={Colors.chart.green} 
+            color={colors.chart.green} 
           />
           <KPICard 
             title="EXPENSES" 
@@ -53,7 +56,7 @@ export default function DashboardScreen({ navigation }) {
             change={kpiData.expenses.change} 
             isPositive={kpiData.expenses.isPositive} 
             icon="credit-card-outline" 
-            color={Colors.chart.orange} 
+            color={colors.chart.orange} 
           />
           <KPICard 
             title="CASH BALANCE" 
@@ -61,16 +64,16 @@ export default function DashboardScreen({ navigation }) {
             change={kpiData.cashBalance.change} 
             isPositive={kpiData.cashBalance.isPositive} 
             icon="wallet-outline" 
-            color={Colors.chart.blue} 
+            color={colors.chart.blue} 
           />
         </View>
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <Text style={styles.seeAll}>SEE ALL</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Recent Transactions</Text>
+            <Text style={[styles.seeAll, { color: colors.accentLight }]}>SEE ALL</Text>
           </View>
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
             {recentTransactions.map((tx, index) => (
               <TransactionItem key={tx.id} transaction={tx} />
             ))}
@@ -78,8 +81,8 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Weekly Performance</Text>
-          <View style={[styles.card, { padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Weekly Performance</Text>
+          <View style={[styles.card, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore, padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
             <LineChart
               data={{
                 labels: weeklyProfitData.map(d => d.day),
@@ -99,11 +102,11 @@ export default function DashboardScreen({ navigation }) {
               }}
               width={screenWidth - 32} // from react-native
               height={220}
-              yAxisLabel="ETB "
+              yAxisLabel={currencyPrefix}
               chartConfig={{
-                backgroundColor: Colors.bgPanel,
-                backgroundGradientFrom: Colors.bgPanel,
-                backgroundGradientTo: Colors.bgPanel,
+                backgroundColor: colors.bgPanel,
+                backgroundGradientFrom: colors.bgPanel,
+                backgroundGradientTo: colors.bgPanel,
                 decimalPlaces: 0,
                 color: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`, // Muted text for grid/labels
                 labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
@@ -125,14 +128,14 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Expense Breakdown</Text>
-          <View style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Expense Breakdown</Text>
+          <View style={[styles.card, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
             <PieChart
               data={expenseBreakdown.map(item => ({
                 name: item.name,
                 population: item.value,
                 color: item.color,
-                legendFontColor: Colors.textSec,
+                legendFontColor: colors.textSec,
                 legendFontSize: 12
               }))}
               width={screenWidth - 64}
@@ -150,31 +153,31 @@ export default function DashboardScreen({ navigation }) {
         </View>
         
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textCore }]}>Quick Actions</Text>
           <View style={styles.actionGrid}>
             <TouchableOpacity 
-              style={[styles.actionBtn, { backgroundColor: Colors.chart.indigo }]}
+              style={[styles.actionBtn, { backgroundColor: colors.chart.indigo }]}
               onPress={() => navigation.navigate('SalesTab', { openAddModal: true })}
             >
               <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
               <Text style={styles.actionText}>Quick Sale</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.actionBtn, { backgroundColor: Colors.chart.orange }]}
+              style={[styles.actionBtn, { backgroundColor: colors.chart.orange }]}
               onPress={() => navigation.navigate('ExpensesTab', { openAddModal: true })}
             >
               <MaterialCommunityIcons name="credit-card" size={24} color="#FFF" />
               <Text style={styles.actionText}>Record Expense</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.actionBtn, { backgroundColor: Colors.chart.green }]}
+              style={[styles.actionBtn, { backgroundColor: colors.chart.green }]}
               onPress={() => navigation.navigate('MoreTab', { screen: 'Debts', params: { openAddModal: true } })}
             >
               <MaterialCommunityIcons name="currency-usd" size={24} color="#FFF" />
               <Text style={styles.actionText}>Add Debt</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.actionBtn, { backgroundColor: Colors.chart.blue }]}
+              style={[styles.actionBtn, { backgroundColor: colors.chart.blue }]}
               onPress={() => navigation.navigate('MoreTab', { screen: 'Reports' })}
             >
               <MaterialCommunityIcons name="file-document-outline" size={24} color="#FFF" />
@@ -187,10 +190,10 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   scrollContent: {
     padding: 16,
@@ -199,12 +202,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   greeting: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     marginBottom: 4,
   },
   title: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 24,
     fontWeight: 'bold',
   },
@@ -221,21 +224,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 18,
     fontWeight: 'bold',
   },
   seeAll: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 12,
     fontWeight: 'bold',
   },
   card: {
-    backgroundColor: Colors.bgPanel,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
   },
   actionGrid: {
     flexDirection: 'row',

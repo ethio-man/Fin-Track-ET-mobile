@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import InvoiceDetailModal from '../components/InvoiceDetailModal';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
 
 const MOCK_INVOICES = [
-  { id: 'INV-001', client: 'Abebe Bekele', date: 'Oct 12, 2023', amount: '4,500', status: 'Paid' },
-  { id: 'INV-002', client: 'XYZ Corp', date: 'Oct 15, 2023', amount: '12,000', status: 'Pending' },
-  { id: 'INV-003', client: 'Sara Alemu', date: 'Oct 18, 2023', amount: '3,200', status: 'Overdue' },
-  { id: 'INV-004', client: 'Beka Trading', date: 'Oct 20, 2023', amount: '8,500', status: 'Pending' },
+  { id: 'INV-2024-001', client: 'Abebe Kebede', amount: '4,500', date: 'Oct 12, 2024', status: 'Paid' },
+  { id: 'INV-2024-002', client: 'Sara Tech Solutions', amount: '12,000', date: 'Oct 15, 2024', status: 'Pending' },
+  { id: 'INV-2024-003', client: 'XYZ Trading', amount: '8,750', date: 'Oct 05, 2024', status: 'Overdue' },
 ];
 
 export default function InvoicesScreen({ route }) {
+  const { colors = Colors, formatCurrency } = useApp();
+  const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -54,10 +56,10 @@ export default function InvoicesScreen({ route }) {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Paid': return Colors.success;
-      case 'Pending': return Colors.warning;
-      case 'Overdue': return Colors.danger;
-      default: return Colors.textMute;
+      case 'Paid': return colors.success;
+      case 'Pending': return colors.warning;
+      case 'Overdue': return colors.danger;
+      default: return colors.textMute;
     }
   };
 
@@ -82,23 +84,23 @@ export default function InvoicesScreen({ route }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMute} style={styles.searchIcon} />
           <TextInput 
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.textCore }]}
             placeholder="Search invoices..."
-            placeholderTextColor={Colors.textMute}
+            placeholderTextColor={colors.textMute}
             value={search}
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+        <TouchableOpacity style={[styles.filterBtn, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} onPress={() => setFilterVisible(true)}>
           <MaterialCommunityIcons 
             name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
             size={20} 
-            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+            color={Object.keys(activeFilters).length > 0 ? colors.accentLight : colors.textCore} 
           />
         </TouchableOpacity>
       </View>
@@ -108,25 +110,25 @@ export default function InvoicesScreen({ route }) {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.invoiceCard} onPress={() => handleInvoicePress(item)}>
+          <TouchableOpacity style={[styles.invoiceCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} onPress={() => handleInvoicePress(item)}>
             <View style={styles.invoiceHeader}>
-              <Text style={styles.invoiceId}>{item.id}</Text>
+              <Text style={[styles.invoiceId, { color: colors.textSec }]}>{item.id}</Text>
               <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
                 <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>{item.status}</Text>
               </View>
             </View>
             <View style={styles.invoiceBody}>
               <View>
-                <Text style={styles.clientName}>{item.client}</Text>
-                <Text style={styles.invoiceDate}>{item.date}</Text>
+                <Text style={[styles.clientName, { color: colors.textCore }]}>{item.client}</Text>
+                <Text style={[styles.invoiceDate, { color: colors.textMute }]}>{item.date}</Text>
               </View>
-              <Text style={styles.invoiceAmount}>ETB {item.amount}</Text>
+              <Text style={[styles.invoiceAmount, { color: colors.textCore }]}>{formatCurrency(item.amount.replace(/,/g, ''))}</Text>
             </View>
           </TouchableOpacity>
         )}
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => setAddModalVisible(true)}>
+      <TouchableOpacity style={[styles.fab, { backgroundColor: colors.accent, shadowColor: colors.accent }]} onPress={() => setAddModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
 
@@ -156,10 +158,10 @@ export default function InvoicesScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   header: {
     flexDirection: 'row',
@@ -170,10 +172,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   searchIcon: {
     paddingLeft: 12,
@@ -182,15 +184,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 12,
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   filterBtn: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -200,12 +202,12 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   invoiceCard: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   invoiceHeader: {
     flexDirection: 'row',
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   invoiceId: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -233,17 +235,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   clientName: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   invoiceDate: {
-    color: Colors.textMute,
+    color: colors.textMute,
     fontSize: 13,
   },
   invoiceAmount: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -254,10 +256,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

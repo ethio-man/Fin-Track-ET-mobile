@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import SaleCard from '../components/SaleCard';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
@@ -11,6 +12,8 @@ import { mockSales, periodComparisonData } from '../data/mockSales';
 const screenWidth = Dimensions.get('window').width;
 
 export default function SalesScreen({ route }) {
+  const { colors = Colors, currencyPrefix } = useApp();
+  const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [salesList, setSalesList] = useState(mockSales);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -64,23 +67,23 @@ export default function SalesScreen({ route }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMute} style={styles.searchIcon} />
           <TextInput 
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.textCore }]}
             placeholder="Search sales..."
-            placeholderTextColor={Colors.textMute}
+            placeholderTextColor={colors.textMute}
             value={search}
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+        <TouchableOpacity style={[styles.filterBtn, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} onPress={() => setFilterVisible(true)}>
           <MaterialCommunityIcons 
             name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
             size={20} 
-            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+            color={Object.keys(activeFilters).length > 0 ? colors.accentLight : colors.textCore} 
           />
         </TouchableOpacity>
       </View>
@@ -93,8 +96,8 @@ export default function SalesScreen({ route }) {
           <SaleCard sale={item} onPress={() => {}} />
         )}
         ListHeaderComponent={
-          <View style={styles.chartCard}>
-            <Text style={styles.chartTitle}>Sales Trend</Text>
+          <View style={[styles.chartCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+            <Text style={[styles.chartTitle, { color: colors.textCore }]}>Sales Trend</Text>
             <LineChart
               data={{
                 labels: periodComparisonData.map(d => d.time),
@@ -108,11 +111,11 @@ export default function SalesScreen({ route }) {
               }}
               width={screenWidth - 32}
               height={220}
-              yAxisLabel="ETB "
+              yAxisLabel={currencyPrefix}
               chartConfig={{
-                backgroundColor: Colors.bgPanel,
-                backgroundGradientFrom: Colors.bgPanel,
-                backgroundGradientTo: Colors.bgPanel,
+                backgroundColor: colors.bgPanel,
+                backgroundGradientFrom: colors.bgPanel,
+                backgroundGradientTo: colors.bgPanel,
                 decimalPlaces: 0,
                 color: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
@@ -135,13 +138,13 @@ export default function SalesScreen({ route }) {
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialCommunityIcons name="inbox-outline" size={48} color={Colors.textMute} />
-            <Text style={styles.emptyText}>No sales found</Text>
+            <MaterialCommunityIcons name="inbox-outline" size={48} color={colors.textMute} />
+            <Text style={[styles.emptyText, { color: colors.textMute }]}>No sales found</Text>
           </View>
         }
       />
       
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={[styles.fab, { backgroundColor: colors.accent, shadowColor: colors.accent }]} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
 
@@ -165,10 +168,10 @@ export default function SalesScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   header: {
     flexDirection: 'row',
@@ -179,10 +182,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   searchIcon: {
     paddingLeft: 12,
@@ -191,29 +194,29 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 12,
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   filterBtn: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
   chartCard: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     padding: 16,
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     alignItems: 'center',
   },
   chartTitle: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 18,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
@@ -230,7 +233,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    color: Colors.textMute,
+    color: colors.textMute,
     marginTop: 16,
     fontSize: 16,
   },
@@ -241,10 +244,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

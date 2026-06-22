@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function FilterModal({ visible, onClose, onApply, title, filters, currentFilters }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [activeFilters, setActiveFilters] = useState(currentFilters || {});
 
   useEffect(() => {
@@ -46,17 +49,17 @@ export default function FilterModal({ visible, onClose, onApply, title, filters,
   const renderFilterOptions = (filter) => {
     return (
       <View key={filter.name} style={styles.filterSection}>
-        <Text style={styles.filterLabel}>{filter.label}</Text>
+        <Text style={[styles.filterLabel, { color: colors.textCore }]}>{filter.label}</Text>
         <View style={styles.optionsContainer}>
           {filter.options.map(option => {
             const isSelected = activeFilters[filter.name] === option;
             return (
               <TouchableOpacity
                 key={option}
-                style={[styles.optionChip, isSelected && styles.optionChipSelected]}
+                style={[styles.optionChip, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }, isSelected && { backgroundColor: colors.accentSoft, borderColor: colors.accent }]}
                 onPress={() => toggleFilter(filter.name, option)}
               >
-                <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+                <Text style={[styles.optionText, { color: colors.textSec }, isSelected && { color: colors.accentLight }]}>
                   {option}
                 </Text>
               </TouchableOpacity>
@@ -75,11 +78,11 @@ export default function FilterModal({ visible, onClose, onApply, title, filters,
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{title || 'Filter'}</Text>
+        <View style={[styles.modalContent, { backgroundColor: colors.bgCore }]}>
+          <View style={[styles.header, { borderBottomColor: colors.borderCore }]}>
+            <Text style={[styles.title, { color: colors.textCore }]}>{title || 'Filter'}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <MaterialCommunityIcons name="close" size={24} color={Colors.textCore} />
+              <MaterialCommunityIcons name="close" size={24} color={colors.textCore} />
             </TouchableOpacity>
           </View>
 
@@ -87,12 +90,12 @@ export default function FilterModal({ visible, onClose, onApply, title, filters,
             {filters.map(filter => renderFilterOptions(filter))}
           </ScrollView>
 
-          <View style={styles.footer}>
-            <TouchableOpacity style={styles.clearBtn} onPress={handleClear}>
-              <Text style={styles.clearBtnText}>Clear All</Text>
+          <View style={[styles.footer, { borderTopColor: colors.borderCore, backgroundColor: colors.bgCore }]}>
+            <TouchableOpacity style={[styles.clearBtn, { borderColor: colors.borderSubtle }]} onPress={handleClear}>
+              <Text style={[styles.clearBtnText, { color: colors.textSec }]}>Clear All</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
+            <TouchableOpacity style={[styles.applyBtn, { backgroundColor: colors.accent }]} onPress={handleApply}>
               <Text style={styles.applyBtnText}>Apply Filters</Text>
             </TouchableOpacity>
           </View>
@@ -102,14 +105,14 @@ export default function FilterModal({ visible, onClose, onApply, title, filters,
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     minHeight: '50%',
@@ -122,12 +125,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderCore,
+    borderBottomColor: colors.borderCore,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   closeBtn: {
     padding: 4,
@@ -141,7 +144,7 @@ const styles = StyleSheet.create({
   filterLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.textCore,
+    color: colors.textCore,
     marginBottom: 12,
   },
   optionsContainer: {
@@ -153,21 +156,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   optionChipSelected: {
-    backgroundColor: Colors.accentSoft,
-    borderColor: Colors.accent,
+    backgroundColor: colors.accentSoft,
+    borderColor: colors.accent,
   },
   optionText: {
     fontSize: 14,
-    color: Colors.textSec,
+    color: colors.textSec,
     fontWeight: '500',
   },
   optionTextSelected: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontWeight: '600',
   },
   footer: {
@@ -175,8 +178,8 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: Colors.borderCore,
-    backgroundColor: Colors.bgCore,
+    borderTopColor: colors.borderCore,
+    backgroundColor: colors.bgCore,
   },
   clearBtn: {
     flex: 1,
@@ -185,16 +188,16 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: colors.borderSubtle,
   },
   clearBtnText: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 16,
     fontWeight: '600',
   },
   applyBtn: {
     flex: 2,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',

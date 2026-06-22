@@ -2,8 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function ProductCard({ product, onPress }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const isLowStock = product.status === 'Low Stock';
   
   return (
@@ -17,7 +20,7 @@ export default function ProductCard({ product, onPress }) {
           <MaterialCommunityIcons 
             name="package-variant-closed" 
             size={24} 
-            color={Colors.textMute} 
+            color={colors.textMute} 
           />
         </View>
         <View style={styles.info}>
@@ -33,11 +36,11 @@ export default function ProductCard({ product, onPress }) {
         <Text style={styles.price}>${product.price.toLocaleString()}</Text>
         <View style={[
           styles.stockBadge, 
-          { backgroundColor: isLowStock ? Colors.dangerBg : Colors.successBg }
+          { backgroundColor: isLowStock ? colors.dangerBg : colors.successBg }
         ]}>
           <Text style={[
             styles.stockText,
-            { color: isLowStock ? Colors.danger : Colors.success }
+            { color: isLowStock ? colors.danger : colors.success }
           ]}>
             {product.stock} in stock
           </Text>
@@ -47,17 +50,17 @@ export default function ProductCard({ product, onPress }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   left: {
     flexDirection: 'row',
@@ -68,7 +71,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 8,
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -78,32 +81,32 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   name: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 15,
     fontWeight: '600',
     marginBottom: 2,
   },
   sku: {
-    color: Colors.textMute,
+    color: colors.textMute,
     fontSize: 12,
     marginBottom: 4,
   },
   categoryContainer: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
   category: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 11,
   },
   right: {
     alignItems: 'flex-end',
   },
   price: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 8,

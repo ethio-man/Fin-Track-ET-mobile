@@ -15,6 +15,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 const INITIAL_BUSINESS = {
   businessName: 'Girma Trading PLC',
@@ -46,6 +47,8 @@ const INDUSTRY_OPTIONS = [
 // Business logo uploader
 // ─────────────────────────────────────────
 function LogoUpload({ logoUri, businessName, onPress }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const initial = businessName?.[0]?.toUpperCase() ?? 'B';
   return (
     <TouchableOpacity style={styles.logoWrapper} onPress={onPress} activeOpacity={0.85}>
@@ -53,7 +56,7 @@ function LogoUpload({ logoUri, businessName, onPress }) {
         <Image source={{ uri: logoUri }} style={styles.logoImage} />
       ) : (
         <View style={styles.logoPlaceholder}>
-          <MaterialCommunityIcons name="storefront-outline" size={36} color={Colors.accentLight} />
+          <MaterialCommunityIcons name="storefront-outline" size={36} color={colors.accentLight} />
           <Text style={styles.logoInitial}>{initial}</Text>
         </View>
       )}
@@ -69,6 +72,8 @@ function LogoUpload({ logoUri, businessName, onPress }) {
 // Text field
 // ─────────────────────────────────────────
 function Field({ label, value, onChangeText, keyboardType = 'default', autoCapitalize = 'words', icon, placeholder }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [focused, setFocused] = useState(false);
   return (
     <View style={styles.fieldGroup}>
@@ -78,7 +83,7 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
           <MaterialCommunityIcons
             name={icon}
             size={20}
-            color={focused ? Colors.accentLight : Colors.textMute}
+            color={focused ? colors.accentLight : colors.textMute}
             style={styles.inputIcon}
           />
         )}
@@ -87,7 +92,7 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder ?? ''}
-          placeholderTextColor={Colors.textMute}
+          placeholderTextColor={colors.textMute}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           onFocus={() => setFocused(true)}
@@ -102,6 +107,8 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
 // Industry picker dropdown
 // ─────────────────────────────────────────
 function IndustryPicker({ value, onChange }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [open, setOpen] = useState(false);
   return (
     <View style={styles.fieldGroup}>
@@ -114,16 +121,16 @@ function IndustryPicker({ value, onChange }) {
         <MaterialCommunityIcons
           name="domain"
           size={20}
-          color={open ? Colors.accentLight : Colors.textMute}
+          color={open ? colors.accentLight : colors.textMute}
           style={styles.inputIcon}
         />
-        <Text style={[styles.input, { color: value ? Colors.textCore : Colors.textMute }]}>
+        <Text style={[styles.input, { color: value ? colors.textCore : colors.textMute }]}>
           {value || 'Select industry'}
         </Text>
         <MaterialCommunityIcons
           name={open ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={Colors.textMute}
+          color={colors.textMute}
         />
       </TouchableOpacity>
       {open && (
@@ -135,7 +142,7 @@ function IndustryPicker({ value, onChange }) {
               onPress={() => { onChange(opt); setOpen(false); }}
             >
               {value === opt && (
-                <MaterialCommunityIcons name="check" size={16} color={Colors.accentLight} style={{ marginRight: 8 }} />
+                <MaterialCommunityIcons name="check" size={16} color={colors.accentLight} style={{ marginRight: 8 }} />
               )}
               <Text style={[styles.dropdownText, value === opt && styles.dropdownTextSelected]}>
                 {opt}
@@ -149,9 +156,11 @@ function IndustryPicker({ value, onChange }) {
 }
 
 function InfoBanner() {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   return (
     <View style={styles.banner}>
-      <MaterialCommunityIcons name="information-outline" size={18} color={Colors.accentLight} />
+      <MaterialCommunityIcons name="information-outline" size={18} color={colors.accentLight} />
       <Text style={styles.bannerText}>
         Your business details and logo appear on invoices and financial reports.
       </Text>
@@ -163,6 +172,8 @@ function InfoBanner() {
 // Main Screen
 // ─────────────────────────────────────────
 export default function BusinessDetailsScreen() {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [biz, setBiz] = useState(INITIAL_BUSINESS);
   const [logoUri, setLogoUri] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -249,7 +260,7 @@ export default function BusinessDetailsScreen() {
             <Text style={styles.logoName}>{biz.businessName || 'Your Business'}</Text>
             <Text style={styles.logoSub}>{biz.industry}</Text>
             <TouchableOpacity style={styles.changeLogoBtn} onPress={handlePickLogo}>
-              <MaterialCommunityIcons name="image-edit-outline" size={16} color={Colors.accentLight} />
+              <MaterialCommunityIcons name="image-edit-outline" size={16} color={colors.accentLight} />
               <Text style={styles.changeLogoBtnText}>
                 {logoUri ? 'Change Logo' : 'Upload Logo'}
               </Text>
@@ -260,7 +271,7 @@ export default function BusinessDetailsScreen() {
 
           {/* ── Identity ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="identifier" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="identifier" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Business Identity</Text>
           </View>
           <View style={styles.card}>
@@ -297,7 +308,7 @@ export default function BusinessDetailsScreen() {
 
           {/* ── Location ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="map-marker-outline" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="map-marker-outline" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Location</Text>
           </View>
           <View style={styles.card}>
@@ -328,7 +339,7 @@ export default function BusinessDetailsScreen() {
 
           {/* ── Contact ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="contacts-outline" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="contacts-outline" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Contact Info</Text>
           </View>
           <View style={styles.card}>
@@ -378,10 +389,10 @@ export default function BusinessDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   content: {
     padding: 16,
@@ -404,9 +415,9 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 22,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderWidth: 2,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -415,10 +426,10 @@ const styles = StyleSheet.create({
     height: 96,
     borderRadius: 22,
     borderWidth: 2,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
   },
   logoInitial: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 28,
     fontWeight: '700',
     position: 'absolute',
@@ -433,21 +444,21 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     borderWidth: 2,
-    borderColor: Colors.bgCore,
+    borderColor: colors.bgCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoName: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 4,
     textAlign: 'center',
   },
   logoSub: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '500',
     marginBottom: 12,
@@ -455,15 +466,15 @@ const styles = StyleSheet.create({
   changeLogoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
     paddingHorizontal: 16,
     paddingVertical: 7,
   },
   changeLogoBtnText: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '600',
     marginLeft: 6,
@@ -473,7 +484,7 @@ const styles = StyleSheet.create({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accentSoft,
+    backgroundColor: colors.accentSoft,
     borderRadius: 12,
     padding: 12,
     marginBottom: 20,
@@ -481,7 +492,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(100,181,246,0.2)',
   },
   bannerText: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     flex: 1,
     lineHeight: 18,
@@ -496,7 +507,7 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   sectionTitle: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -506,16 +517,16 @@ const styles = StyleSheet.create({
 
   // ── Card ──
   card: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     paddingHorizontal: 16,
     marginBottom: 20,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.borderSubtle,
+    backgroundColor: colors.borderSubtle,
   },
 
   // ── Field ──
@@ -523,7 +534,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   fieldLabel: {
-    color: Colors.textMute,
+    color: colors.textMute,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -533,15 +544,15 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     paddingHorizontal: 12,
     minHeight: 46,
   },
   inputRowFocused: {
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
     backgroundColor: 'rgba(100, 181, 246, 0.06)',
   },
   inputIcon: {
@@ -549,17 +560,17 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     paddingVertical: 0,
   },
 
   // ── Dropdown ──
   dropdownList: {
-    backgroundColor: Colors.bgCard,
+    backgroundColor: colors.bgCard,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     marginTop: 6,
     overflow: 'hidden',
   },
@@ -569,17 +580,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: colors.borderSubtle,
   },
   dropdownItemSelected: {
-    backgroundColor: Colors.accentSoft,
+    backgroundColor: colors.accentSoft,
   },
   dropdownText: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 15,
   },
   dropdownTextSelected: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontWeight: '600',
   },
 
@@ -589,7 +600,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     borderRadius: 14,
     paddingVertical: 16,
     marginTop: 8,

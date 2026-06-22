@@ -4,16 +4,20 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 const InvoiceDetailModal = ({ visible, invoice, onClose }) => {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
+
   if (!invoice) return null;
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Paid': return Colors.success;
-      case 'Pending': return Colors.warning;
-      case 'Overdue': return Colors.danger;
-      default: return Colors.textMute;
+      case 'Paid': return colors.success;
+      case 'Pending': return colors.warning;
+      case 'Overdue': return colors.danger;
+      default: return colors.textMute;
     }
   };
 
@@ -163,12 +167,12 @@ const InvoiceDetailModal = ({ visible, invoice, onClose }) => {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.container}>
-        <View style={styles.headerBar}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
+        <View style={[styles.headerBar, { borderBottomColor: colors.borderCore, backgroundColor: colors.bgPanel }]}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <MaterialCommunityIcons name="close" size={24} color={Colors.textCore} />
+            <MaterialCommunityIcons name="close" size={24} color={colors.textCore} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Invoice Details</Text>
+          <Text style={[styles.headerTitle, { color: colors.textCore }]}>Invoice Details</Text>
           <TouchableOpacity onPress={handleExportPdf} style={styles.exportBtn}>
             <MaterialCommunityIcons name="printer" size={20} color="#FFF" />
             <Text style={styles.exportBtnText}>Export PDF</Text>
@@ -250,10 +254,10 @@ const InvoiceDetailModal = ({ visible, invoice, onClose }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   headerBar: {
     flexDirection: 'row',
@@ -262,8 +266,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderCore,
-    backgroundColor: Colors.bgPanel,
+    borderBottomColor: colors.borderCore,
+    backgroundColor: colors.bgPanel,
   },
   closeBtn: {
     padding: 8,
@@ -271,12 +275,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 4,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
   },
   paperHeader: {
     flexDirection: 'row',
@@ -330,7 +334,7 @@ const styles = StyleSheet.create({
   logoPlaceholder: {
     width: 28,
     height: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
@@ -352,7 +356,7 @@ const styles = StyleSheet.create({
   paperTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.accent,
+    color: colors.accent,
     letterSpacing: 1,
   },
   paperInvoiceId: {
@@ -421,7 +425,7 @@ const styles = StyleSheet.create({
   tableHeader: {
     flexDirection: 'row',
     borderBottomWidth: 2,
-    borderBottomColor: Colors.accent,
+    borderBottomColor: colors.accent,
     paddingBottom: 8,
     marginBottom: 8,
   },
@@ -429,12 +433,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 10,
     fontWeight: '600',
-    color: Colors.accent,
+    color: colors.accent,
   },
   thTotal: {
     fontSize: 10,
     fontWeight: '600',
-    color: Colors.accent,
+    color: colors.accent,
     textAlign: 'right',
   },
   tableRow: {
@@ -482,17 +486,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     borderTopWidth: 2,
-    borderTopColor: Colors.accent,
+    borderTopColor: colors.accent,
     marginTop: 4,
   },
   finalTotalLabel: {
     fontSize: 13,
-    color: Colors.accent,
+    color: colors.accent,
     fontWeight: 'bold',
   },
   finalTotalVal: {
     fontSize: 14,
-    color: Colors.accent,
+    color: colors.accent,
     fontWeight: 'bold',
   },
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import Colors from '../theme/colors';
+import ColorsFallback from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 import MoreScreen from '../screens/MoreScreen';
 import DebtsScreen from '../screens/DebtsScreen';
@@ -14,15 +15,17 @@ import AuthScreen from '../screens/AuthScreen';
 const Stack = createStackNavigator();
 
 export default function MoreStackNavigator() {
+  const { colors = ColorsFallback } = useApp();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.bgCore,
+          backgroundColor: colors.bgCore,
           shadowColor: 'transparent',
           elevation: 0,
         },
-        headerTintColor: Colors.textCore,
+        headerTintColor: colors.textCore,
         headerTitleStyle: {
           fontWeight: 'bold',
         },

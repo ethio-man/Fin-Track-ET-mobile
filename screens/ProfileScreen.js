@@ -15,6 +15,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 const INITIAL_PROFILE = {
   firstName: 'Abebe',
@@ -28,6 +29,8 @@ const INITIAL_PROFILE = {
 // Avatar with upload overlay
 // ─────────────────────────────────────────
 function AvatarUpload({ imageUri, initials, onPress }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   return (
     <TouchableOpacity style={styles.avatarWrapper} onPress={onPress} activeOpacity={0.85}>
       {imageUri ? (
@@ -54,6 +57,8 @@ function AvatarUpload({ imageUri, initials, onPress }) {
 // Text input field
 // ─────────────────────────────────────────
 function Field({ label, value, onChangeText, keyboardType = 'default', autoCapitalize = 'words', icon }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [focused, setFocused] = useState(false);
   return (
     <View style={styles.fieldGroup}>
@@ -63,7 +68,7 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
           <MaterialCommunityIcons
             name={icon}
             size={20}
-            color={focused ? Colors.accentLight : Colors.textMute}
+            color={focused ? colors.accentLight : colors.textMute}
             style={styles.inputIcon}
           />
         )}
@@ -71,7 +76,7 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
           style={styles.input}
           value={value}
           onChangeText={onChangeText}
-          placeholderTextColor={Colors.textMute}
+          placeholderTextColor={colors.textMute}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           onFocus={() => setFocused(true)}
@@ -86,6 +91,8 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
 // Main Screen
 // ─────────────────────────────────────────
 export default function ProfileScreen() {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [profile, setProfile] = useState(INITIAL_PROFILE);
   const [avatarUri, setAvatarUri] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -169,11 +176,11 @@ export default function ProfileScreen() {
             <AvatarUpload imageUri={avatarUri} initials={initials} onPress={handlePickImage} />
             <Text style={styles.avatarName}>{profile.firstName} {profile.lastName}</Text>
             <View style={styles.rolePill}>
-              <MaterialCommunityIcons name="briefcase-outline" size={12} color={Colors.accentLight} />
+              <MaterialCommunityIcons name="briefcase-outline" size={12} color={colors.accentLight} />
               <Text style={styles.roleText}>{profile.role}</Text>
             </View>
             <TouchableOpacity style={styles.changePhotoBtn} onPress={handlePickImage}>
-              <MaterialCommunityIcons name="camera-outline" size={16} color={Colors.accentLight} />
+              <MaterialCommunityIcons name="camera-outline" size={16} color={colors.accentLight} />
               <Text style={styles.changePhotoBtnText}>
                 {avatarUri ? 'Change Photo' : 'Upload Photo'}
               </Text>
@@ -182,7 +189,7 @@ export default function ProfileScreen() {
 
           {/* ── Personal Info ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="account-outline" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="account-outline" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Personal Information</Text>
           </View>
           <View style={styles.card}>
@@ -193,7 +200,7 @@ export default function ProfileScreen() {
 
           {/* ── Contact Details ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="card-account-details-outline" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="card-account-details-outline" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Contact Details</Text>
           </View>
           <View style={styles.card}>
@@ -218,7 +225,7 @@ export default function ProfileScreen() {
 
           {/* ── Role ── */}
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="shield-account-outline" size={16} color={Colors.accentLight} />
+            <MaterialCommunityIcons name="shield-account-outline" size={16} color={colors.accentLight} />
             <Text style={styles.sectionTitle}>Role</Text>
           </View>
           <View style={styles.card}>
@@ -241,10 +248,10 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   content: {
     padding: 16,
@@ -267,18 +274,18 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
   },
   avatarImage: {
     width: 96,
     height: 96,
     borderRadius: 48,
     borderWidth: 3,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
   },
   avatarInitials: {
     fontSize: 34,
@@ -293,9 +300,9 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     borderWidth: 2,
-    borderColor: Colors.bgCore,
+    borderColor: colors.bgCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -314,7 +321,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   avatarName: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 6,
@@ -322,14 +329,14 @@ const styles = StyleSheet.create({
   rolePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accentSoft,
+    backgroundColor: colors.accentSoft,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 4,
     marginBottom: 12,
   },
   roleText: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '600',
     marginLeft: 4,
@@ -338,15 +345,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
     paddingHorizontal: 16,
     paddingVertical: 7,
   },
   changePhotoBtnText: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '600',
     marginLeft: 4,
@@ -360,7 +367,7 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   sectionTitle: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
     fontSize: 13,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -370,16 +377,16 @@ const styles = StyleSheet.create({
 
   // ── Card ──
   card: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     paddingHorizontal: 16,
     marginBottom: 20,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.borderSubtle,
+    backgroundColor: colors.borderSubtle,
   },
 
   // ── Field ──
@@ -387,7 +394,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   fieldLabel: {
-    color: Colors.textMute,
+    color: colors.textMute,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -397,15 +404,15 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     paddingHorizontal: 12,
     height: 46,
   },
   inputRowFocused: {
-    borderColor: Colors.accentLight,
+    borderColor: colors.accentLight,
     backgroundColor: 'rgba(100, 181, 246, 0.06)',
   },
   inputIcon: {
@@ -413,7 +420,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     paddingVertical: 0,
   },
@@ -424,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     borderRadius: 14,
     paddingVertical: 16,
     marginTop: 8,

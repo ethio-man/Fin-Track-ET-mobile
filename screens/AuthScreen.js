@@ -2,13 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function AuthScreen({ navigation }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <MaterialCommunityIcons name="finance" size={64} color={Colors.accentLight} />
+          <MaterialCommunityIcons name="finance" size={64} color={colors.accentLight} />
           <Text style={styles.title}>FinTrack ET</Text>
           <Text style={styles.subtitle}>Smart Finance. Ethiopian Roots.</Text>
         </View>
@@ -26,10 +29,10 @@ export default function AuthScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   content: {
     flex: 1,
@@ -41,13 +44,13 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   title: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 32,
     fontWeight: '900',
     marginTop: 16,
   },
   subtitle: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 16,
     marginTop: 8,
   },
@@ -55,7 +58,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   btnPrimary: {
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

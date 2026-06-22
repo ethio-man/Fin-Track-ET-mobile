@@ -14,8 +14,11 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function RecordFormModal({ visible, onClose, onSubmit, title, fields }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -83,10 +86,10 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
                 return (
                   <TouchableOpacity
                     key={index}
-                    style={[styles.chip, isSelected && styles.chipSelected]}
+                    style={[styles.chip, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }, isSelected && { backgroundColor: colors.accentSoft, borderColor: colors.accent }]}
                     onPress={() => handleChange(field.name, optValue)}
                   >
-                    <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
+                    <Text style={[styles.chipText, { color: colors.textSec }, isSelected && { color: colors.accent }]}>
                       {optLabel}
                     </Text>
                   </TouchableOpacity>
@@ -99,11 +102,11 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
       case 'number':
         return (
           <View style={styles.fieldContainer} key={field.name}>
-            <Text style={styles.label}>{field.label}</Text>
+            <Text style={[styles.label, { color: colors.textSec }]}>{field.label}</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore, color: colors.textCore }]}
               placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-              placeholderTextColor={Colors.textMute}
+              placeholderTextColor={colors.textMute}
               keyboardType="decimal-pad"
               value={formData[field.name] ? String(formData[field.name]) : ''}
               onChangeText={(val) => handleChange(field.name, val)}
@@ -114,15 +117,15 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
       case 'date':
         return (
           <View style={styles.fieldContainer} key={field.name}>
-            <Text style={styles.label}>{field.label}</Text>
+            <Text style={[styles.label, { color: colors.textSec }]}>{field.label}</Text>
             <TouchableOpacity 
-              style={styles.input} 
+              style={[styles.input, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} 
               onPress={() => {
                 setActiveDateField(field.name);
                 setShowDatePicker(true);
               }}
             >
-              <Text style={{ color: formData[field.name] ? Colors.textCore : Colors.textMute }}>
+              <Text style={{ color: formData[field.name] ? colors.textCore : colors.textMute }}>
                 {formData[field.name] || field.placeholder || 'Select Date'}
               </Text>
             </TouchableOpacity>
@@ -133,11 +136,11 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
       default:
         return (
           <View style={styles.fieldContainer} key={field.name}>
-            <Text style={styles.label}>{field.label}</Text>
+            <Text style={[styles.label, { color: colors.textSec }]}>{field.label}</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore, color: colors.textCore }]}
               placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-              placeholderTextColor={Colors.textMute}
+              placeholderTextColor={colors.textMute}
               value={formData[field.name]}
               onChangeText={(val) => handleChange(field.name, val)}
             />
@@ -157,12 +160,12 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
         style={styles.modalOverlay}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.modalContent}>
+        <View style={[styles.modalContent, { backgroundColor: colors.bgCore, borderColor: colors.borderSubtle }]}>
           
           <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={[styles.title, { color: colors.textCore }]}>{title}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <MaterialCommunityIcons name="close" size={24} color={Colors.textSec} />
+              <MaterialCommunityIcons name="close" size={24} color={colors.textSec} />
             </TouchableOpacity>
           </View>
 
@@ -171,11 +174,11 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
           </ScrollView>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={onClose} disabled={isSubmitting}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+            <TouchableOpacity style={[styles.cancelBtn, { borderColor: colors.borderCore }]} onPress={onClose} disabled={isSubmitting}>
+              <Text style={[styles.cancelBtnText, { color: colors.textCore }]}>Cancel</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={isSubmitting}>
+            <TouchableOpacity style={[styles.submitBtn, { backgroundColor: colors.accent }]} onPress={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? (
                 <ActivityIndicator size="small" color="#FFF" />
               ) : (
@@ -203,14 +206,14 @@ export default function RecordFormModal({ visible, onClose, onSubmit, title, fie
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.7)', // Dark blur effect
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 20,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: colors.borderSubtle,
   },
   header: {
     flexDirection: 'row',
@@ -232,7 +235,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   closeButton: {
     padding: 4,
@@ -245,17 +248,17 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: Colors.textSec,
+    color: colors.textSec,
     marginBottom: 8,
     fontWeight: '500',
   },
   input: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     borderRadius: 12,
     padding: 14,
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
   },
   chipsContainer: {
@@ -266,21 +269,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     marginRight: 10,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
   },
   chipSelected: {
     backgroundColor: 'rgba(99, 102, 241, 0.1)', // Light indigo
-    borderColor: Colors.accent,
+    borderColor: colors.accent,
   },
   chipText: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     fontWeight: '500',
   },
   chipTextSelected: {
-    color: Colors.accent,
+    color: colors.accent,
     fontWeight: '600',
   },
   footer: {
@@ -292,12 +295,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cancelBtnText: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -305,7 +308,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     borderRadius: 12,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextI
 import { BarChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
@@ -11,6 +12,8 @@ import { mockInventory } from '../data/mockInventory';
 const screenWidth = Dimensions.get('window').width;
 
 export default function InventoryScreen({ route }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [inventoryList, setInventoryList] = useState(mockInventory);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -67,11 +70,11 @@ export default function InventoryScreen({ route }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMute} style={styles.searchIcon} />
           <TextInput 
             style={styles.searchInput}
             placeholder="Search products..."
-            placeholderTextColor={Colors.textMute}
+            placeholderTextColor={colors.textMute}
             value={search}
             onChangeText={setSearch}
           />
@@ -80,7 +83,7 @@ export default function InventoryScreen({ route }) {
           <MaterialCommunityIcons 
             name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
             size={20} 
-            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+            color={Object.keys(activeFilters).length > 0 ? colors.accentLight : colors.textCore} 
           />
         </TouchableOpacity>
       </View>
@@ -96,12 +99,12 @@ export default function InventoryScreen({ route }) {
           <>
             <View style={styles.alertCard}>
             <View style={styles.alertHeader}>
-              <MaterialCommunityIcons name="alert" size={20} color={Colors.warning} />
+              <MaterialCommunityIcons name="alert" size={20} color={colors.warning} />
               <Text style={styles.alertTitle}>Low Stock Alerts</Text>
             </View>
               <Text style={styles.alertText}>1 item requires your attention</Text>
             </View>
-            <View style={[styles.alertCard, { borderColor: Colors.borderCore, padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
+            <View style={[styles.alertCard, { borderColor: colors.borderCore, padding: 0, paddingVertical: 16, alignItems: 'center' }]}>
               <Text style={[styles.alertTitle, { marginBottom: 16 }]}>Stock Levels</Text>
               <BarChart
                 data={{
@@ -116,9 +119,9 @@ export default function InventoryScreen({ route }) {
                 height={220}
                 yAxisLabel=""
                 chartConfig={{
-                  backgroundColor: Colors.bgPanel,
-                  backgroundGradientFrom: Colors.bgPanel,
-                  backgroundGradientTo: Colors.bgPanel,
+                  backgroundColor: colors.bgPanel,
+                  backgroundGradientFrom: colors.bgPanel,
+                  backgroundGradientTo: colors.bgPanel,
                   decimalPlaces: 0,
                   color: (opacity = 1) => `rgba(165, 180, 252, ${opacity})`,
                   labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
@@ -136,7 +139,7 @@ export default function InventoryScreen({ route }) {
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialCommunityIcons name="package-variant" size={48} color={Colors.textMute} />
+            <MaterialCommunityIcons name="package-variant" size={48} color={colors.textMute} />
             <Text style={styles.emptyText}>No products found</Text>
           </View>
         }
@@ -166,10 +169,10 @@ export default function InventoryScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   header: {
     flexDirection: 'row',
@@ -180,10 +183,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   searchIcon: {
     paddingLeft: 12,
@@ -192,25 +195,25 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 12,
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   filterBtn: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
   alertCard: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: Colors.warning,
+    borderColor: colors.warning,
   },
   alertHeader: {
     flexDirection: 'row',
@@ -219,12 +222,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   alertTitle: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: 'bold',
   },
   alertText: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
   },
   listContent: {
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    color: Colors.textMute,
+    color: colors.textMute,
     marginTop: 16,
     fontSize: 16,
   },
@@ -249,10 +252,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

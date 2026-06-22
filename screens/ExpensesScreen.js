@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextI
 import { PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import ExpenseItem from '../components/ExpenseItem';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
@@ -12,6 +13,8 @@ import { expenseBreakdown } from '../data/mockDashboard';
 const screenWidth = Dimensions.get('window').width;
 
 export default function ExpensesScreen({ route }) {
+  const { colors = Colors, formatCurrency } = useApp();
+  const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [expensesList, setExpensesList] = useState(mockExpenses);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -63,23 +66,23 @@ export default function ExpensesScreen({ route }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMute} style={styles.searchIcon} />
           <TextInput 
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.textCore }]}
             placeholder="Search expenses..."
-            placeholderTextColor={Colors.textMute}
+            placeholderTextColor={colors.textMute}
             value={search}
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+        <TouchableOpacity style={[styles.filterBtn, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} onPress={() => setFilterVisible(true)}>
           <MaterialCommunityIcons 
             name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
             size={20} 
-            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+            color={Object.keys(activeFilters).length > 0 ? colors.accentLight : colors.textCore} 
           />
         </TouchableOpacity>
       </View>
@@ -92,15 +95,15 @@ export default function ExpensesScreen({ route }) {
           <ExpenseItem expense={item} />
         )}
         ListHeaderComponent={
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Total Expenses This Month</Text>
-            <Text style={styles.summaryAmount}>ETB 71,450</Text>
+          <View style={[styles.summaryCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+            <Text style={[styles.summaryTitle, { color: colors.textSec }]}>Total Expenses This Month</Text>
+            <Text style={[styles.summaryAmount, { color: colors.textCore }]}>{formatCurrency(71450)}</Text>
             <PieChart
               data={expenseBreakdown.map(item => ({
                 name: item.name,
                 population: item.value,
                 color: item.color,
-                legendFontColor: Colors.textSec,
+                legendFontColor: colors.textSec,
                 legendFontSize: 12
               }))}
               width={screenWidth - 72}
@@ -118,13 +121,13 @@ export default function ExpensesScreen({ route }) {
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialCommunityIcons name="inbox-outline" size={48} color={Colors.textMute} />
-            <Text style={styles.emptyText}>No expenses found</Text>
+            <MaterialCommunityIcons name="inbox-outline" size={48} color={colors.textMute} />
+            <Text style={[styles.emptyText, { color: colors.textMute }]}>No expenses found</Text>
           </View>
         }
       />
       
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={[styles.fab, { backgroundColor: colors.accent, shadowColor: colors.accent }]} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
 
@@ -148,10 +151,10 @@ export default function ExpensesScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   header: {
     flexDirection: 'row',
@@ -162,10 +165,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   searchIcon: {
     paddingLeft: 12,
@@ -174,34 +177,34 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 12,
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   filterBtn: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
   summaryCard: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     padding: 20,
     borderRadius: 16,
     marginBottom: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   summaryTitle: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     marginBottom: 8,
   },
   summaryAmount: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 28,
     fontWeight: 'bold',
   },
@@ -216,7 +219,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    color: Colors.textMute,
+    color: colors.textMute,
     marginTop: 16,
     fontSize: 16,
   },
@@ -227,10 +230,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

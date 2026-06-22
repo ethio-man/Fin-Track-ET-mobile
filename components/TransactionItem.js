@@ -2,39 +2,40 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function TransactionItem({ transaction }) {
+  const { colors = Colors, formatCurrency } = useApp();
   const isIncome = transaction.type === 'sale';
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderBottomColor: colors.borderSubtle }]}>
       <View style={styles.left}>
         <View style={[
           styles.iconContainer,
-          { backgroundColor: isIncome ? Colors.successBg : Colors.dangerBg }
+          { backgroundColor: isIncome ? colors.successBg : colors.dangerBg }
         ]}>
           <MaterialCommunityIcons 
             name={isIncome ? "arrow-top-right" : "arrow-bottom-right"} 
             size={20} 
-            color={isIncome ? Colors.success : Colors.danger} 
+            color={isIncome ? colors.success : colors.danger} 
           />
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.description} numberOfLines={1}>{transaction.description}</Text>
-          <Text style={styles.date}>{transaction.date}</Text>
+          <Text style={[styles.description, { color: colors.textCore }]} numberOfLines={1}>{transaction.description}</Text>
+          <Text style={[styles.date, { color: colors.textSec }]}>{transaction.date}</Text>
         </View>
       </View>
       <View style={styles.right}>
         <Text style={[
           styles.amount,
-          { color: isIncome ? Colors.success : Colors.danger }
+          { color: isIncome ? colors.success : colors.danger }
         ]}>
-          {isIncome ? '+' : ''}
-          {transaction.amount < 0 ? transaction.amount : `$${transaction.amount.toLocaleString()}`}
+          {isIncome ? '+' : '-'} {formatCurrency(transaction.amount)}
         </Text>
         <View style={[
           styles.dot,
-          { backgroundColor: isIncome ? Colors.success : Colors.danger }
+          { backgroundColor: isIncome ? colors.success : colors.danger }
         ]} />
       </View>
     </View>
@@ -48,7 +49,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
   },
   left: {
     flexDirection: 'row',
@@ -68,13 +68,11 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   description: {
-    color: Colors.textCore,
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 4,
   },
   date: {
-    color: Colors.textSec,
     fontSize: 12,
   },
   right: {

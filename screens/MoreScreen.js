@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 const MENU_ITEMS = [
   { id: 'Debts', icon: 'account-cash', title: 'Debts & Receivables', desc: 'Manage who owes you money' },
@@ -11,14 +12,16 @@ const MENU_ITEMS = [
 ];
 
 export default function MoreScreen({ navigation }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>More Options</Text>
+          <Text style={[styles.title, { color: colors.textCore }]}>More Options</Text>
         </View>
 
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
           {MENU_ITEMS.map((item, index) => (
             <TouchableOpacity 
               key={item.id} 
@@ -29,32 +32,32 @@ export default function MoreScreen({ navigation }) {
               onPress={() => navigation.navigate(item.id)}
             >
               <View style={styles.menuLeft}>
-                <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name={item.icon} size={24} color={Colors.accentLight} />
+                <View style={[styles.iconContainer, { backgroundColor: colors.bgPanelInner }]}>
+                  <MaterialCommunityIcons name={item.icon} size={24} color={colors.accentLight} />
                 </View>
                 <View>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuDesc}>{item.desc}</Text>
+                  <Text style={[styles.menuTitle, { color: colors.textCore }]}>{item.title}</Text>
+                  <Text style={[styles.menuDesc, { color: colors.textSec }]}>{item.desc}</Text>
                 </View>
               </View>
-              <MaterialCommunityIcons name="chevron-right" size={24} color={Colors.textMute} />
+              <MaterialCommunityIcons name="chevron-right" size={24} color={colors.textMute} />
             </TouchableOpacity>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.navigate('Auth')}>
-          <MaterialCommunityIcons name="logout" size={20} color={Colors.danger} />
-          <Text style={styles.logoutText}>Log Out</Text>
+        <TouchableOpacity style={[styles.logoutBtn, { backgroundColor: colors.bgPanel, borderColor: colors.dangerBg }]} onPress={() => navigation.navigate('Auth')}>
+          <MaterialCommunityIcons name="logout" size={20} color={colors.danger} />
+          <Text style={[styles.logoutText, { color: colors.danger }]}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   content: {
     padding: 16,
@@ -63,15 +66,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 28,
     fontWeight: 'bold',
   },
   card: {
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     overflow: 'hidden',
     marginBottom: 24,
   },
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: colors.borderSubtle,
   },
   lastMenuItem: {
     borderBottomWidth: 0,
@@ -95,19 +98,19 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
   },
   menuTitle: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   menuDesc: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 13,
   },
   logoutBtn: {
@@ -115,14 +118,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.dangerBg,
+    borderColor: colors.dangerBg,
     gap: 8,
   },
   logoutText: {
-    color: Colors.danger,
+    color: colors.danger,
     fontSize: 16,
     fontWeight: '600',
   },

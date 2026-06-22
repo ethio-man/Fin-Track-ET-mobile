@@ -2,12 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 export default function EmptyState({ icon = "inbox", title, description }) {
+  const { colors = Colors } = useApp();
+  const styles = createStyles(colors);
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <MaterialCommunityIcons name={icon} size={48} color={Colors.textMute} />
+        <MaterialCommunityIcons name={icon} size={48} color={colors.textMute} />
       </View>
       <Text style={styles.title}>{title}</Text>
       {description && <Text style={styles.description}>{description}</Text>}
@@ -15,7 +18,7 @@ export default function EmptyState({ icon = "inbox", title, description }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -27,20 +30,20 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   title: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
     textAlign: 'center',
   },
   description: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,

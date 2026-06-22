@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Colors from '../theme/colors';
+import ColorsFallback from '../theme/colors';
+import { useApp } from '../context/AppContext';
 
 // We'll import screens shortly, using placeholders for now
 import DashboardScreen from '../screens/DashboardScreen';
@@ -13,27 +14,29 @@ import MoreStackNavigator from './MoreStackNavigator';
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
+  const { colors = ColorsFallback } = useApp();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.bgCore,
+          backgroundColor: colors.bgCore,
           shadowColor: 'transparent',
           elevation: 0,
         },
-        headerTintColor: Colors.textCore,
+        headerTintColor: colors.textCore,
         headerTitleStyle: {
           fontWeight: 'bold',
         },
         tabBarStyle: {
-          backgroundColor: Colors.bgPanel,
-          borderTopColor: Colors.borderCore,
+          backgroundColor: colors.bgPanel,
+          borderTopColor: colors.borderCore,
           paddingBottom: 8,
           paddingTop: 8,
           height: 60,
         },
-        tabBarActiveTintColor: Colors.accentLight,
-        tabBarInactiveTintColor: Colors.textMute,
+        tabBarActiveTintColor: colors.accentLight,
+        tabBarInactiveTintColor: colors.textMute,
       }}
     >
       <Tab.Screen 

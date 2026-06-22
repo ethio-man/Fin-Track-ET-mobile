@@ -4,16 +4,19 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
 
 const MOCK_DEBTS = [
-  { id: '1', name: 'Dawit Tadesse', type: 'owe_me', amount: '2,500', dueDate: 'Oct 25', status: 'Pending' },
-  { id: '2', name: 'Office Supplier', type: 'i_owe', amount: '8,000', dueDate: 'Oct 30', status: 'Pending' },
-  { id: '3', name: 'Helen Kebede', type: 'owe_me', amount: '1,200', dueDate: 'Oct 15', status: 'Overdue' },
+  { id: '1', name: 'Almaz Supply', amount: '3,200', dueDate: 'Oct 20, 2024', status: 'Pending', type: 'owe_me' },
+  { id: '2', name: 'Yared Getachew', amount: '500', dueDate: 'Oct 18, 2024', status: 'Pending', type: 'owe_me' },
+  { id: '3', name: 'Office Rent', amount: '8,000', dueDate: 'Oct 25, 2024', status: 'Pending', type: 'i_owe' },
 ];
 
 export default function DebtsScreen({ route }) {
+  const { colors = Colors, formatCurrency } = useApp();
+  const styles = createStyles(colors);
   const [tab, setTab] = useState('owe_me');
   const [search, setSearch] = useState('');
   const [debtsList, setDebtsList] = useState(MOCK_DEBTS);
@@ -74,6 +77,7 @@ export default function DebtsScreen({ route }) {
       const isOweMe = debt.type === 'owe_me';
       const creditorName = isOweMe ? 'FinanceTrack Business' : debt.name;
       const debtorName = isOweMe ? debt.name : 'FinanceTrack Business';
+      const formattedAmount = formatCurrency(debt.amount.replace(/,/g, ''));
 
       const html = `
         <html>
@@ -156,7 +160,7 @@ export default function DebtsScreen({ route }) {
             </div>
             
             <div class="amount-section" style="margin-bottom: 35px;">
-              <p>The debtor agrees to repay the outstanding balance of <strong class="bold-black">ETB ${debt.amount}</strong> by <strong class="bold-black">${debt.dueDate}</strong>.</p>
+              <p>The debtor agrees to repay the outstanding balance of <strong class="bold-black">${formattedAmount}</strong> by <strong class="bold-black">${debt.dueDate}</strong>.</p>
             </div>
             
             <div class="reference" style="margin-bottom: 60px;">
@@ -202,48 +206,48 @@ export default function DebtsScreen({ route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bgCore }]}>
       <View style={styles.tabsContainer}>
         <TouchableOpacity 
-          style={[styles.tab, tab === 'owe_me' && styles.activeTab]}
+          style={[styles.tab, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }, tab === 'owe_me' && { backgroundColor: colors.accentSoft, borderColor: colors.accent }]}
           onPress={() => setTab('owe_me')}
         >
-          <Text style={[styles.tabText, tab === 'owe_me' && styles.activeTabText]}>To Receive</Text>
+          <Text style={[styles.tabText, { color: colors.textSec }, tab === 'owe_me' && { color: colors.accentLight }]}>To Receive</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.tab, tab === 'i_owe' && styles.activeTab]}
+          style={[styles.tab, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }, tab === 'i_owe' && { backgroundColor: colors.accentSoft, borderColor: colors.accent }]}
           onPress={() => setTab('i_owe')}
         >
-          <Text style={[styles.tabText, tab === 'i_owe' && styles.activeTabText]}>To Pay</Text>
+          <Text style={[styles.tabText, { color: colors.textSec }, tab === 'i_owe' && { color: colors.accentLight }]}>To Pay</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.textMute} style={styles.searchIcon} />
           <TextInput 
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.textCore }]}
             placeholder="Search debts..."
-            placeholderTextColor={Colors.textMute}
+            placeholderTextColor={colors.textMute}
             value={search}
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+        <TouchableOpacity style={[styles.filterBtn, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]} onPress={() => setFilterVisible(true)}>
           <MaterialCommunityIcons 
             name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
             size={20} 
-            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+            color={Object.keys(activeFilters).length > 0 ? colors.accentLight : colors.textCore} 
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>
+        <Text style={[styles.summaryTitle, { color: colors.textSec }]}>
           Total {tab === 'owe_me' ? 'Receivables' : 'Payables'}
         </Text>
-        <Text style={[styles.summaryAmount, { color: tab === 'owe_me' ? Colors.success : Colors.danger }]}>
-          ETB {tab === 'owe_me' ? '3,700' : '8,000'}
+        <Text style={[styles.summaryAmount, { color: tab === 'owe_me' ? colors.success : colors.danger }]}>
+          {formatCurrency(tab === 'owe_me' ? 3700 : 8000)}
         </Text>
       </View>
 
@@ -252,39 +256,39 @@ export default function DebtsScreen({ route }) {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <View style={styles.debtCard}>
+          <View style={[styles.debtCard, { backgroundColor: colors.bgPanel, borderColor: colors.borderCore }]}>
             <View style={styles.debtLeft}>
-              <View style={[styles.avatar, { backgroundColor: tab === 'owe_me' ? Colors.successBg : Colors.dangerBg }]}>
-                <Text style={[styles.avatarText, { color: tab === 'owe_me' ? Colors.success : Colors.danger }]}>
+              <View style={[styles.avatar, { backgroundColor: tab === 'owe_me' ? colors.successBg : colors.dangerBg }]}>
+                <Text style={[styles.avatarText, { color: tab === 'owe_me' ? colors.success : colors.danger }]}>
                   {item.name.charAt(0)}
                 </Text>
               </View>
               <View>
-                <Text style={styles.debtName}>{item.name}</Text>
+                <Text style={[styles.debtName, { color: colors.textCore }]}>{item.name}</Text>
                 <View style={styles.dateContainer}>
                   <MaterialCommunityIcons 
                     name={item.status === 'Overdue' ? 'alert-circle' : 'calendar-blank'} 
                     size={14} 
-                    color={item.status === 'Overdue' ? Colors.danger : Colors.textMute} 
+                    color={item.status === 'Overdue' ? colors.danger : colors.textMute} 
                   />
-                  <Text style={[styles.debtDate, item.status === 'Overdue' && { color: Colors.danger }]}>
+                  <Text style={[styles.debtDate, { color: colors.textMute }, item.status === 'Overdue' && { color: colors.danger }]}>
                     Due: {item.dueDate}
                   </Text>
                 </View>
               </View>
             </View>
             <View style={styles.debtRight}>
-              <Text style={styles.debtAmount}>ETB {item.amount}</Text>
+              <Text style={[styles.debtAmount, { color: colors.textCore }]}>{formatCurrency(item.amount.replace(/,/g, ''))}</Text>
               <View style={styles.actionsContainer}>
                 <TouchableOpacity 
-                  style={styles.iconBtn} 
+                  style={[styles.iconBtn, { backgroundColor: colors.bgPanelInner, borderColor: colors.borderSubtle }]} 
                   onPress={() => generateAgreement(item)}
                   activeOpacity={0.7}
                 >
-                  <MaterialCommunityIcons name="file-document-outline" size={18} color={Colors.textSec} />
+                  <MaterialCommunityIcons name="file-document-outline" size={18} color={colors.textSec} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionBtn}>
-                  <Text style={styles.actionText}>{tab === 'owe_me' ? 'Remind' : 'Pay'}</Text>
+                <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.bgPanelInner, borderColor: colors.borderSubtle }]}>
+                  <Text style={[styles.actionText, { color: colors.textCore }]}>{tab === 'owe_me' ? 'Remind' : 'Pay'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -292,13 +296,13 @@ export default function DebtsScreen({ route }) {
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialCommunityIcons name="check-circle-outline" size={48} color={Colors.textMute} />
-            <Text style={styles.emptyText}>No {tab === 'owe_me' ? 'receivables' : 'debts'} found.</Text>
+            <MaterialCommunityIcons name="check-circle-outline" size={48} color={colors.textMute} />
+            <Text style={[styles.emptyText, { color: colors.textMute }]}>No {tab === 'owe_me' ? 'receivables' : 'debts'} found.</Text>
           </View>
         }
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={[styles.fab, { backgroundColor: colors.accent, shadowColor: colors.accent }]} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
 
@@ -322,10 +326,10 @@ export default function DebtsScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgCore,
+    backgroundColor: colors.bgCore,
   },
   header: {
     flexDirection: 'row',
@@ -337,10 +341,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   searchIcon: {
     paddingLeft: 12,
@@ -349,15 +353,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 12,
-    color: Colors.textCore,
+    color: colors.textCore,
   },
   filterBtn: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -370,29 +374,29 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   activeTab: {
-    backgroundColor: Colors.accentSoft,
-    borderColor: Colors.accent,
+    backgroundColor: colors.accentSoft,
+    borderColor: colors.accent,
   },
   tabText: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 15,
     fontWeight: '600',
   },
   activeTabText: {
-    color: Colors.accentLight,
+    color: colors.accentLight,
   },
   summaryContainer: {
     alignItems: 'center',
     paddingBottom: 24,
   },
   summaryTitle: {
-    color: Colors.textSec,
+    color: colors.textSec,
     fontSize: 14,
     marginBottom: 8,
   },
@@ -409,12 +413,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.bgPanel,
+    backgroundColor: colors.bgPanel,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.borderCore,
+    borderColor: colors.borderCore,
   },
   debtLeft: {
     flexDirection: 'row',
@@ -433,7 +437,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   debtName: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
@@ -444,14 +448,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   debtDate: {
-    color: Colors.textMute,
+    color: colors.textMute,
     fontSize: 13,
   },
   debtRight: {
     alignItems: 'flex-end',
   },
   debtAmount: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
@@ -463,25 +467,25 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     padding: 6,
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: colors.borderSubtle,
     justifyContent: 'center',
     alignItems: 'center',
   },
   actionBtn: {
-    backgroundColor: Colors.bgPanelInner,
+    backgroundColor: colors.bgPanelInner,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    borderColor: colors.borderSubtle,
     justifyContent: 'center',
     alignItems: 'center',
   },
   actionText: {
-    color: Colors.textCore,
+    color: colors.textCore,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -491,7 +495,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    color: Colors.textMute,
+    color: colors.textMute,
     marginTop: 16,
     fontSize: 16,
   },
@@ -502,10 +506,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.accent,
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

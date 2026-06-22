@@ -2,17 +2,14 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import DarkColors from '../theme/colors';
 import LightColors from '../theme/lightColors';
 
-// ─── Currency metadata ───────────────────────────────────────────────────────
 export const CURRENCIES = {
   ETB: { code: 'ETB', symbol: 'ETB', prefix: 'ETB ', label: 'Ethiopian Birr',  flag: '🇪🇹' },
   USD: { code: 'USD', symbol: '$',   prefix: '$',    label: 'US Dollar',        flag: '🇺🇸' },
   EUR: { code: 'EUR', symbol: '€',   prefix: '€',    label: 'Euro',             flag: '🇪🇺' },
 };
 
-// ─── Context ─────────────────────────────────────────────────────────────────
 const AppContext = createContext(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
 export function AppProvider({ children }) {
   const [currency, setCurrency] = useState('ETB');
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -41,20 +38,17 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
-        // ── Currency ──
         currency,
         setCurrency,
         currencyPrefix,
         currencyMeta,
         formatCurrency,
 
-        // ── Theme ──
         isDarkMode,
         setIsDarkMode,
         toggleDarkMode,
         colors,
 
-        // ── Notifications ──
         notificationsEnabled,
         toggleNotifications,
       }}
@@ -64,7 +58,6 @@ export function AppProvider({ children }) {
   );
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useApp() {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error('useApp must be used inside <AppProvider>');

@@ -66,7 +66,6 @@ export default function SplashScreen({ onFinish }) {
 
   const startEntranceSequence = () => {
     Animated.sequence([
-      // Logo pop in with bounce
       Animated.parallel([
         Animated.spring(logoScale, {
           toValue: 1,
@@ -85,7 +84,6 @@ export default function SplashScreen({ onFinish }) {
           useNativeDriver: true,
         }),
       ]),
-      // Chart animation
       Animated.parallel([
         Animated.timing(chartOpacity, {
           toValue: 1,
@@ -98,7 +96,6 @@ export default function SplashScreen({ onFinish }) {
           useNativeDriver: true,
         }),
       ]),
-      // Title slides in
       Animated.parallel([
         Animated.timing(titleOpacity, {
           toValue: 1,
@@ -112,7 +109,6 @@ export default function SplashScreen({ onFinish }) {
           useNativeDriver: true,
         }),
       ]),
-      // Subtitle
       Animated.parallel([
         Animated.timing(subtitleOpacity, {
           toValue: 1,
@@ -126,7 +122,6 @@ export default function SplashScreen({ onFinish }) {
           useNativeDriver: true,
         }),
       ]),
-      // Tagline
       Animated.timing(taglineOpacity, {
         toValue: 1,
         duration: 500,

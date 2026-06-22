@@ -23,7 +23,6 @@ export default function AppNavigator() {
     <NavigationContainer>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.bgCore} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* We'll default to Auth first in a real app, but skip to main for demo */}
         <Stack.Screen name="Main" component={BottomTabNavigator} />
         <Stack.Screen name="Auth" component={AuthScreen} />
       </Stack.Navigator>

@@ -6,14 +6,12 @@ import { mockExpenses } from '../data/mockExpenses';
 import { mockInventory } from '../data/mockInventory';
 import { kpiData as mockKpiData, recentTransactions as mockRecentTransactions, expenseBreakdown as mockExpenseBreakdown } from '../data/mockDashboard';
 
-// Because InvoicesScreen uses a local MOCK_INVOICES, we import/define it here
 const MOCK_INVOICES = [
   { id: 'INV-2024-001', client: 'Abebe Kebede', amount: '4,500', date: 'Oct 12, 2024', status: 'Paid' },
   { id: 'INV-2024-002', client: 'Sara Tech Solutions', amount: '12,000', date: 'Oct 15, 2024', status: 'Pending' },
   { id: 'INV-2024-003', client: 'XYZ Trading', amount: '8,750', date: 'Oct 05, 2024', status: 'Overdue' },
 ];
 
-// DebtsScreen local mock
 const MOCK_DEBTS = [
   { id: '1', name: 'Almaz Supply', amount: '3,200', dueDate: 'Oct 20, 2024', status: 'Pending', type: 'owe_me' },
   { id: '2', name: 'Yared Getachew', amount: '500', dueDate: 'Oct 18, 2024', status: 'Pending', type: 'owe_me' },
@@ -95,7 +93,7 @@ export function DataProvider({ children }) {
 
     let totalProfit = totalSales - totalExpenses;
     
-    // Estimate cash balance for demo purposes (e.g., initial capital + profit)
+    // Starting cash balance offset (initial capital baseline)
     let cashBalance = 36335 + totalProfit; 
 
     const kpiData = {

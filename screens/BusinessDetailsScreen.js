@@ -44,9 +44,6 @@ const INDUSTRY_OPTIONS = [
   'Other',
 ];
 
-// ─────────────────────────────────────────
-// Business logo uploader
-// ─────────────────────────────────────────
 function LogoUpload({ logoUri, businessName, onPress }) {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -69,9 +66,6 @@ function LogoUpload({ logoUri, businessName, onPress }) {
   );
 }
 
-// ─────────────────────────────────────────
-// Text field
-// ─────────────────────────────────────────
 function Field({ label, value, onChangeText, keyboardType = 'default', autoCapitalize = 'words', icon, placeholder }) {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -104,9 +98,6 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
   );
 }
 
-// ─────────────────────────────────────────
-// Industry picker dropdown
-// ─────────────────────────────────────────
 function IndustryPicker({ value, onChange }) {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -169,9 +160,6 @@ function InfoBanner() {
   );
 }
 
-// ─────────────────────────────────────────
-// Main Screen
-// ─────────────────────────────────────────
 export default function BusinessDetailsScreen() {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -195,7 +183,6 @@ export default function BusinessDetailsScreen() {
 
   const set = (key) => (val) => setBiz((b) => ({ ...b, [key]: val }));
 
-  // ── Logo picker ───────────────────────────────
   const handlePickLogo = () => {
     Alert.alert(
       'Business Logo',
@@ -243,7 +230,6 @@ export default function BusinessDetailsScreen() {
     }
   };
 
-  // ── Save ──────────────────────────────────────
   const handleSave = async () => {
     if (!biz.businessName.trim()) {
       Alert.alert('Required', 'Business name is required.');
@@ -426,7 +412,6 @@ const createStyles = (colors) => StyleSheet.create({
     paddingBottom: 40,
   },
 
-  // ── Logo section ──
   logoSection: {
     alignItems: 'center',
     paddingVertical: 24,
@@ -507,7 +492,6 @@ const createStyles = (colors) => StyleSheet.create({
     marginLeft: 6,
   },
 
-  // ── Banner ──
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -526,7 +510,6 @@ const createStyles = (colors) => StyleSheet.create({
     marginLeft: 8,
   },
 
-  // ── Section headers ──
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -542,7 +525,6 @@ const createStyles = (colors) => StyleSheet.create({
     marginLeft: 6,
   },
 
-  // ── Card ──
   card: {
     backgroundColor: colors.bgPanel,
     borderRadius: 16,
@@ -556,7 +538,6 @@ const createStyles = (colors) => StyleSheet.create({
     backgroundColor: colors.borderSubtle,
   },
 
-  // ── Field ──
   fieldGroup: {
     paddingVertical: 14,
   },
@@ -592,7 +573,6 @@ const createStyles = (colors) => StyleSheet.create({
     paddingVertical: 0,
   },
 
-  // ── Dropdown ──
   dropdownList: {
     backgroundColor: colors.bgCard,
     borderRadius: 12,
@@ -621,7 +601,6 @@ const createStyles = (colors) => StyleSheet.create({
     fontWeight: '600',
   },
 
-  // ── Save ──
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',

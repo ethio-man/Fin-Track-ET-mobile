@@ -26,9 +26,6 @@ const INITIAL_PROFILE = {
   role: 'Business Owner',
 };
 
-// ─────────────────────────────────────────
-// Avatar with upload overlay
-// ─────────────────────────────────────────
 function AvatarUpload({ imageUri, initials, onPress }) {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -54,9 +51,6 @@ function AvatarUpload({ imageUri, initials, onPress }) {
   );
 }
 
-// ─────────────────────────────────────────
-// Text input field
-// ─────────────────────────────────────────
 function Field({ label, value, onChangeText, keyboardType = 'default', autoCapitalize = 'words', icon }) {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -88,9 +82,6 @@ function Field({ label, value, onChangeText, keyboardType = 'default', autoCapit
   );
 }
 
-// ─────────────────────────────────────────
-// Main Screen
-// ─────────────────────────────────────────
 export default function ProfileScreen() {
   const { colors = Colors } = useApp();
   const styles = createStyles(colors);
@@ -116,7 +107,6 @@ export default function ProfileScreen() {
 
   const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase();
 
-  // ── Image picker ──────────────────────────────
   const handlePickImage = () => {
     Alert.alert(
       'Profile Photo',
@@ -164,7 +154,6 @@ export default function ProfileScreen() {
     }
   };
 
-  // ── Save ──────────────────────────────────────
   const handleSave = async () => {
     if (!profile.firstName.trim() || !profile.lastName.trim()) {
       Alert.alert('Required', 'First and last name are required.');
@@ -285,7 +274,6 @@ const createStyles = (colors) => StyleSheet.create({
     paddingBottom: 40,
   },
 
-  // ── Avatar ──
   avatarSection: {
     alignItems: 'center',
     paddingVertical: 28,
@@ -386,7 +374,6 @@ const createStyles = (colors) => StyleSheet.create({
     marginLeft: 4,
   },
 
-  // ── Section headers ──
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -402,7 +389,6 @@ const createStyles = (colors) => StyleSheet.create({
     marginLeft: 6,
   },
 
-  // ── Card ──
   card: {
     backgroundColor: colors.bgPanel,
     borderRadius: 16,
@@ -416,7 +402,6 @@ const createStyles = (colors) => StyleSheet.create({
     backgroundColor: colors.borderSubtle,
   },
 
-  // ── Field ──
   fieldGroup: {
     paddingVertical: 14,
   },
@@ -452,7 +437,6 @@ const createStyles = (colors) => StyleSheet.create({
     paddingVertical: 0,
   },
 
-  // ── Save ──
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',

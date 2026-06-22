@@ -4,7 +4,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ColorsFallback from '../theme/colors';
 import { useApp } from '../context/AppContext';
 
-// We'll import screens shortly, using placeholders for now
 import DashboardScreen from '../screens/DashboardScreen';
 import SalesScreen from '../screens/SalesScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';

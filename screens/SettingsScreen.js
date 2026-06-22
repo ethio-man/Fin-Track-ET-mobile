@@ -15,9 +15,6 @@ const LINK_ROUTES = {
   business: 'BusinessDetails',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Currency Picker Modal
-// ─────────────────────────────────────────────────────────────────────────────
 function CurrencyModal({ visible, onClose, current, onSelect }) {
   const C = DarkColors; // modal always dark for consistency
   return (
@@ -59,9 +56,6 @@ function CurrencyModal({ visible, onClose, current, onSelect }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Profile Header shortcut
-// ─────────────────────────────────────────────────────────────────────────────
 function ProfileHeader({ colors, onPress, profile, avatarUri }) {
   const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase();
   return (
@@ -86,9 +80,6 @@ function ProfileHeader({ colors, onPress, profile, avatarUri }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Screen
-// ─────────────────────────────────────────────────────────────────────────────
 export default function SettingsScreen({ navigation }) {
   const {
     currency, setCurrency,
@@ -251,9 +242,6 @@ export default function SettingsScreen({ navigation }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Styles
-// ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, paddingBottom: 32 },

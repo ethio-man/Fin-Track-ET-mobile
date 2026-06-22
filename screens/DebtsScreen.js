@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Alert, Platform, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
 import RecordFormModal from '../components/RecordFormModal';
+import FilterModal from '../components/FilterModal';
 
 const MOCK_DEBTS = [
   { id: '1', name: 'Dawit Tadesse', type: 'owe_me', amount: '2,500', dueDate: 'Oct 25', status: 'Pending' },
@@ -14,8 +15,11 @@ const MOCK_DEBTS = [
 
 export default function DebtsScreen({ route }) {
   const [tab, setTab] = useState('owe_me');
+  const [search, setSearch] = useState('');
   const [debtsList, setDebtsList] = useState(MOCK_DEBTS);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     if (route?.params?.openAddModal) {
@@ -42,7 +46,26 @@ export default function DebtsScreen({ route }) {
     setDebtsList([newDebt, ...debtsList]);
   };
 
-  const filteredDebts = debtsList.filter(debt => debt.type === tab);
+  const filterConfig = [
+    { name: 'status', label: 'Status', options: ['Pending', 'Overdue'] },
+    { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
+  ];
+
+  let filteredDebts = debtsList.filter(debt => debt.type === tab);
+
+  if (search) {
+    filteredDebts = filteredDebts.filter(debt => debt.name.toLowerCase().includes(search.toLowerCase()));
+  }
+
+  if (activeFilters.status) {
+    filteredDebts = filteredDebts.filter(debt => debt.status === activeFilters.status);
+  }
+
+  if (activeFilters.sortAmount === 'Highest First') {
+    filteredDebts.sort((a, b) => parseFloat(b.amount.replace(/,/g, '')) - parseFloat(a.amount.replace(/,/g, '')));
+  } else if (activeFilters.sortAmount === 'Lowest First') {
+    filteredDebts.sort((a, b) => parseFloat(a.amount.replace(/,/g, '')) - parseFloat(b.amount.replace(/,/g, '')));
+  }
 
   const generateAgreement = async (debt) => {
     try {
@@ -195,6 +218,26 @@ export default function DebtsScreen({ route }) {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.header}>
+        <View style={styles.searchContainer}>
+          <MaterialCommunityIcons name="magnify" size={20} color={Colors.textMute} style={styles.searchIcon} />
+          <TextInput 
+            style={styles.searchInput}
+            placeholder="Search debts..."
+            placeholderTextColor={Colors.textMute}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+          <MaterialCommunityIcons 
+            name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
+            size={20} 
+            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+          />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.summaryContainer}>
         <Text style={styles.summaryTitle}>
           Total {tab === 'owe_me' ? 'Receivables' : 'Payables'}
@@ -266,6 +309,15 @@ export default function DebtsScreen({ route }) {
         title="Record Debt"
         fields={debtsFields}
       />
+
+      <FilterModal
+        visible={isFilterVisible}
+        onClose={() => setFilterVisible(false)}
+        onApply={setActiveFilters}
+        title="Filter Debts"
+        filters={filterConfig}
+        currentFilters={activeFilters}
+      />
     </SafeAreaView>
   );
 }
@@ -274,6 +326,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.bgCore,
+  },
+  header: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    gap: 12,
+  },
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.bgPanel,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderCore,
+  },
+  searchIcon: {
+    paddingLeft: 12,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 12,
+    color: Colors.textCore,
+  },
+  filterBtn: {
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.bgPanel,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderCore,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tabsContainer: {
     flexDirection: 'row',

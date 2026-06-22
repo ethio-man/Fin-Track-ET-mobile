@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import InvoiceDetailModal from '../components/InvoiceDetailModal';
 import RecordFormModal from '../components/RecordFormModal';
+import FilterModal from '../components/FilterModal';
 
 const MOCK_INVOICES = [
   { id: 'INV-001', client: 'Abebe Bekele', date: 'Oct 12, 2023', amount: '4,500', status: 'Paid' },
@@ -18,6 +19,8 @@ export default function InvoicesScreen({ route }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [invoicesList, setInvoicesList] = useState(MOCK_INVOICES);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     if (route?.params?.openAddModal) {
@@ -58,10 +61,25 @@ export default function InvoicesScreen({ route }) {
     }
   };
 
-  const filteredInvoices = invoicesList.filter(inv => 
+  const filterConfig = [
+    { name: 'status', label: 'Status', options: ['Draft', 'Pending', 'Paid', 'Overdue'] },
+    { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
+  ];
+
+  let filteredInvoices = invoicesList.filter(inv => 
     inv.client.toLowerCase().includes(search.toLowerCase()) || 
     inv.id.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (activeFilters.status) {
+    filteredInvoices = filteredInvoices.filter(inv => inv.status === activeFilters.status);
+  }
+
+  if (activeFilters.sortAmount === 'Highest First') {
+    filteredInvoices.sort((a, b) => parseFloat(b.amount.replace(/,/g, '')) - parseFloat(a.amount.replace(/,/g, '')));
+  } else if (activeFilters.sortAmount === 'Lowest First') {
+    filteredInvoices.sort((a, b) => parseFloat(a.amount.replace(/,/g, '')) - parseFloat(b.amount.replace(/,/g, '')));
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,8 +94,12 @@ export default function InvoicesScreen({ route }) {
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn}>
-          <MaterialCommunityIcons name="filter-variant" size={20} color={Colors.textCore} />
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+          <MaterialCommunityIcons 
+            name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
+            size={20} 
+            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -120,6 +142,15 @@ export default function InvoicesScreen({ route }) {
         onSubmit={handleAddInvoice}
         title="Create Invoice"
         fields={invoiceFields}
+      />
+
+      <FilterModal
+        visible={isFilterVisible}
+        onClose={() => setFilterVisible(false)}
+        onApply={setActiveFilters}
+        title="Filter Invoices"
+        filters={filterConfig}
+        currentFilters={activeFilters}
       />
     </SafeAreaView>
   );

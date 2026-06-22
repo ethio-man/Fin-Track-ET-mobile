@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ExpenseItem from '../components/ExpenseItem';
 import RecordFormModal from '../components/RecordFormModal';
+import FilterModal from '../components/FilterModal';
 import { mockExpenses } from '../data/mockExpenses';
 import { expenseBreakdown } from '../data/mockDashboard';
 
@@ -14,6 +15,8 @@ export default function ExpensesScreen({ route }) {
   const [search, setSearch] = useState('');
   const [expensesList, setExpensesList] = useState(mockExpenses);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     if (route?.params?.openAddModal) {
@@ -39,10 +42,25 @@ export default function ExpensesScreen({ route }) {
     setExpensesList([newExpense, ...expensesList]);
   };
 
-  const filteredExpenses = expensesList.filter(expense => 
+  const filterConfig = [
+    { name: 'category', label: 'Category', options: ['Rent', 'Salary', 'Transport', 'Utilities', 'Other'] },
+    { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
+  ];
+
+  let filteredExpenses = expensesList.filter(expense => 
     expense.description.toLowerCase().includes(search.toLowerCase()) || 
     expense.category.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (activeFilters.category) {
+    filteredExpenses = filteredExpenses.filter(expense => expense.category === activeFilters.category);
+  }
+
+  if (activeFilters.sortAmount === 'Highest First') {
+    filteredExpenses.sort((a, b) => b.amount - a.amount);
+  } else if (activeFilters.sortAmount === 'Lowest First') {
+    filteredExpenses.sort((a, b) => a.amount - b.amount);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,8 +75,12 @@ export default function ExpensesScreen({ route }) {
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn}>
-          <MaterialCommunityIcons name="filter-variant" size={20} color={Colors.textCore} />
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+          <MaterialCommunityIcons 
+            name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
+            size={20} 
+            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -112,6 +134,15 @@ export default function ExpensesScreen({ route }) {
         onSubmit={handleAddExpense}
         title="Record Expense"
         fields={expensesFields}
+      />
+
+      <FilterModal
+        visible={isFilterVisible}
+        onClose={() => setFilterVisible(false)}
+        onApply={setActiveFilters}
+        title="Filter Expenses"
+        filters={filterConfig}
+        currentFilters={activeFilters}
       />
     </SafeAreaView>
   );

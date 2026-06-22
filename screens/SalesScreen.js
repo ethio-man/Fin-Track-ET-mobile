@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import SaleCard from '../components/SaleCard';
 import RecordFormModal from '../components/RecordFormModal';
+import FilterModal from '../components/FilterModal';
 import { mockSales, periodComparisonData } from '../data/mockSales';
 
 const screenWidth = Dimensions.get('window').width;
@@ -13,6 +14,8 @@ export default function SalesScreen({ route }) {
   const [search, setSearch] = useState('');
   const [salesList, setSalesList] = useState(mockSales);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     if (route?.params?.openAddModal) {
@@ -40,10 +43,25 @@ export default function SalesScreen({ route }) {
     setSalesList([newSale, ...salesList]);
   };
 
-  const filteredSales = salesList.filter(sale => 
+  const filterConfig = [
+    { name: 'paymentMethod', label: 'Payment Method', options: ['cash', 'telebirr', 'bank', 'credit'] },
+    { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
+  ];
+
+  let filteredSales = salesList.filter(sale => 
     sale.customer.toLowerCase().includes(search.toLowerCase()) || 
     sale.id.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (activeFilters.paymentMethod) {
+    filteredSales = filteredSales.filter(sale => sale.paymentMethod === activeFilters.paymentMethod);
+  }
+
+  if (activeFilters.sortAmount === 'Highest First') {
+    filteredSales.sort((a, b) => b.total - a.total);
+  } else if (activeFilters.sortAmount === 'Lowest First') {
+    filteredSales.sort((a, b) => a.total - b.total);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,8 +76,12 @@ export default function SalesScreen({ route }) {
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn}>
-          <MaterialCommunityIcons name="filter-variant" size={20} color={Colors.textCore} />
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+          <MaterialCommunityIcons 
+            name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
+            size={20} 
+            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -129,6 +151,15 @@ export default function SalesScreen({ route }) {
         onSubmit={handleAddSale}
         title="Record New Sale"
         fields={salesFields}
+      />
+
+      <FilterModal
+        visible={isFilterVisible}
+        onClose={() => setFilterVisible(false)}
+        onApply={setActiveFilters}
+        title="Filter Sales"
+        filters={filterConfig}
+        currentFilters={activeFilters}
       />
     </SafeAreaView>
   );

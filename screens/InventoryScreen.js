@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ProductCard from '../components/ProductCard';
 import RecordFormModal from '../components/RecordFormModal';
+import FilterModal from '../components/FilterModal';
 import { mockInventory } from '../data/mockInventory';
 
 const screenWidth = Dimensions.get('window').width;
@@ -13,6 +14,8 @@ export default function InventoryScreen({ route }) {
   const [search, setSearch] = useState('');
   const [inventoryList, setInventoryList] = useState(mockInventory);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({});
 
   useEffect(() => {
     if (route?.params?.openAddModal) {
@@ -42,10 +45,23 @@ export default function InventoryScreen({ route }) {
     setInventoryList([newProduct, ...inventoryList]);
   };
 
-  const filteredInventory = inventoryList.filter(product => 
+  const filterConfig = [
+    { name: 'status', label: 'Status', options: ['In Stock', 'Low Stock'] },
+    { name: 'category', label: 'Category', options: ['Beverages', 'Electronics', 'Furniture', 'Office Supplies', 'Stationery', 'Health & Safety', 'Kitchen'] }
+  ];
+
+  let filteredInventory = inventoryList.filter(product => 
     product.name.toLowerCase().includes(search.toLowerCase()) || 
     product.sku.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (activeFilters.status) {
+    filteredInventory = filteredInventory.filter(product => product.status === activeFilters.status);
+  }
+
+  if (activeFilters.category) {
+    filteredInventory = filteredInventory.filter(product => product.category === activeFilters.category);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,8 +76,12 @@ export default function InventoryScreen({ route }) {
             onChangeText={setSearch}
           />
         </View>
-        <TouchableOpacity style={styles.filterBtn}>
-          <MaterialCommunityIcons name="filter-variant" size={20} color={Colors.textCore} />
+        <TouchableOpacity style={styles.filterBtn} onPress={() => setFilterVisible(true)}>
+          <MaterialCommunityIcons 
+            name={Object.keys(activeFilters).length > 0 ? "filter-check" : "filter-variant"} 
+            size={20} 
+            color={Object.keys(activeFilters).length > 0 ? Colors.accentLight : Colors.textCore} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -132,6 +152,15 @@ export default function InventoryScreen({ route }) {
         onSubmit={handleAddProduct}
         title="Add Product"
         fields={inventoryFields}
+      />
+
+      <FilterModal
+        visible={isFilterVisible}
+        onClose={() => setFilterVisible(false)}
+        onApply={setActiveFilters}
+        title="Filter Inventory"
+        filters={filterConfig}
+        currentFilters={activeFilters}
       />
     </SafeAreaView>
   );

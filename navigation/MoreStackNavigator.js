@@ -7,6 +7,8 @@ import DebtsScreen from '../screens/DebtsScreen';
 import InvoicesScreen from '../screens/InvoicesScreen';
 import ReportsScreen from '../screens/ReportsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import BusinessDetailsScreen from '../screens/BusinessDetailsScreen';
 import AuthScreen from '../screens/AuthScreen';
 
 const Stack = createStackNavigator();
@@ -46,6 +48,16 @@ export default function MoreStackNavigator() {
       <Stack.Screen 
         name="Settings" 
         component={SettingsScreen} 
+      />
+      <Stack.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{ title: 'Profile Information' }}
+      />
+      <Stack.Screen 
+        name="BusinessDetails" 
+        component={BusinessDetailsScreen} 
+        options={{ title: 'Business Details' }}
       />
       <Stack.Screen 
         name="Auth" 

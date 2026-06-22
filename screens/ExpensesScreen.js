@@ -1,18 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ExpenseItem from '../components/ExpenseItem';
+import RecordFormModal from '../components/RecordFormModal';
 import { mockExpenses } from '../data/mockExpenses';
 import { expenseBreakdown } from '../data/mockDashboard';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function ExpensesScreen() {
+export default function ExpensesScreen({ route }) {
   const [search, setSearch] = useState('');
+  const [expensesList, setExpensesList] = useState(mockExpenses);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const filteredExpenses = mockExpenses.filter(expense => 
+  useEffect(() => {
+    if (route?.params?.openAddModal) {
+      setModalVisible(true);
+    }
+  }, [route?.params]);
+
+  const expensesFields = [
+    { name: 'category', label: 'Category', type: 'select', options: ['Rent', 'Salary', 'Transport', 'Utilities', 'Other'], defaultValue: 'Other' },
+    { name: 'amount', label: 'Amount', type: 'number', placeholder: '0.00' },
+    { name: 'date', label: 'Date', type: 'date', placeholder: 'YYYY-MM-DD' },
+    { name: 'description', label: 'Description', type: 'text', placeholder: 'What was this expense for?' },
+  ];
+
+  const handleAddExpense = (formData) => {
+    const newExpense = {
+      id: `EXP-0${Math.floor(100 + Math.random() * 900)}`,
+      date: formData.date || new Date().toISOString().split('T')[0],
+      category: formData.category || 'Other',
+      description: formData.description || 'New Expense',
+      amount: parseFloat(formData.amount) || 0,
+    };
+    setExpensesList([newExpense, ...expensesList]);
+  };
+
+  const filteredExpenses = expensesList.filter(expense => 
     expense.description.toLowerCase().includes(search.toLowerCase()) || 
     expense.category.toLowerCase().includes(search.toLowerCase())
   );
@@ -75,9 +102,17 @@ export default function ExpensesScreen() {
         }
       />
       
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <RecordFormModal 
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleAddExpense}
+        title="Record Expense"
+        fields={expensesFields}
+      />
     </SafeAreaView>
   );
 }

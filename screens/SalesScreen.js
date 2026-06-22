@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import SaleCard from '../components/SaleCard';
+import RecordFormModal from '../components/RecordFormModal';
 import { mockSales, periodComparisonData } from '../data/mockSales';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function SalesScreen() {
+export default function SalesScreen({ route }) {
   const [search, setSearch] = useState('');
+  const [salesList, setSalesList] = useState(mockSales);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const filteredSales = mockSales.filter(sale => 
+  useEffect(() => {
+    if (route?.params?.openAddModal) {
+      setModalVisible(true);
+    }
+  }, [route?.params]);
+
+  const salesFields = [
+    { name: 'customer', label: 'Customer Name', type: 'text', placeholder: 'e.g. John Doe' },
+    { name: 'date', label: 'Date', type: 'date', placeholder: 'YYYY-MM-DD' },
+    { name: 'total', label: 'Total Amount', type: 'number', placeholder: '0.00' },
+    { name: 'paymentMethod', label: 'Payment Method', type: 'select', options: ['Cash', 'Telebirr', 'Bank', 'Credit'], defaultValue: 'Cash' },
+  ];
+
+  const handleAddSale = (formData) => {
+    const newSale = {
+      id: `#${Math.floor(10000 + Math.random() * 90000)}`,
+      customer: formData.customer || 'Unknown Customer',
+      total: parseFloat(formData.total) || 0,
+      date: formData.date || new Date().toISOString().split('T')[0],
+      paymentMethod: formData.paymentMethod.toLowerCase(),
+      status: 'complete',
+      items: [],
+    };
+    setSalesList([newSale, ...salesList]);
+  };
+
+  const filteredSales = salesList.filter(sale => 
     sale.customer.toLowerCase().includes(search.toLowerCase()) || 
     sale.id.toLowerCase().includes(search.toLowerCase())
   );
@@ -90,9 +119,17 @@ export default function SalesScreen() {
         }
       />
       
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <RecordFormModal 
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleAddSale}
+        title="Record New Sale"
+        fields={salesFields}
+      />
     </SafeAreaView>
   );
 }

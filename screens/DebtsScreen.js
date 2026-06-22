@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
+import RecordFormModal from '../components/RecordFormModal';
 
 const MOCK_DEBTS = [
   { id: '1', name: 'Dawit Tadesse', type: 'owe_me', amount: '2,500', dueDate: 'Oct 25', status: 'Pending' },
@@ -11,10 +12,37 @@ const MOCK_DEBTS = [
   { id: '3', name: 'Helen Kebede', type: 'owe_me', amount: '1,200', dueDate: 'Oct 15', status: 'Overdue' },
 ];
 
-export default function DebtsScreen() {
+export default function DebtsScreen({ route }) {
   const [tab, setTab] = useState('owe_me');
+  const [debtsList, setDebtsList] = useState(MOCK_DEBTS);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const filteredDebts = MOCK_DEBTS.filter(debt => debt.type === tab);
+  useEffect(() => {
+    if (route?.params?.openAddModal) {
+      setModalVisible(true);
+    }
+  }, [route?.params]);
+
+  const debtsFields = [
+    { name: 'type', label: 'Type', type: 'select', options: [{ label: 'To Receive', value: 'owe_me' }, { label: 'To Pay', value: 'i_owe' }], defaultValue: 'owe_me' },
+    { name: 'contactName', label: 'Contact Name', type: 'text', placeholder: 'e.g. John Doe' },
+    { name: 'amount', label: 'Amount', type: 'number', placeholder: '0.00' },
+    { name: 'dueDate', label: 'Due Date', type: 'date', placeholder: 'YYYY-MM-DD' },
+  ];
+
+  const handleAddDebt = (formData) => {
+    const newDebt = {
+      id: `${Math.floor(100 + Math.random() * 900)}`,
+      name: formData.contactName || 'New Contact',
+      type: formData.type || 'owe_me',
+      amount: formData.amount || '0',
+      dueDate: formData.dueDate || new Date().toISOString().split('T')[0],
+      status: 'Pending',
+    };
+    setDebtsList([newDebt, ...debtsList]);
+  };
+
+  const filteredDebts = debtsList.filter(debt => debt.type === tab);
 
   const generateAgreement = async (debt) => {
     try {
@@ -227,9 +255,17 @@ export default function DebtsScreen() {
         }
       />
 
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <RecordFormModal 
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleAddDebt}
+        title="Record Debt"
+        fields={debtsFields}
+      />
     </SafeAreaView>
   );
 }

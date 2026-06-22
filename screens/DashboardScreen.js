@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Dimensions, TouchableOpacity } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
@@ -9,7 +9,7 @@ import { kpiData, recentTransactions, weeklyProfitData, expenseBreakdown } from 
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function DashboardScreen() {
+export default function DashboardScreen({ navigation }) {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -152,22 +152,34 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionGrid}>
-            <View style={[styles.actionBtn, { backgroundColor: Colors.chart.indigo }]}>
+            <TouchableOpacity 
+              style={[styles.actionBtn, { backgroundColor: Colors.chart.indigo }]}
+              onPress={() => navigation.navigate('SalesTab', { openAddModal: true })}
+            >
               <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
               <Text style={styles.actionText}>Quick Sale</Text>
-            </View>
-            <View style={[styles.actionBtn, { backgroundColor: Colors.chart.orange }]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionBtn, { backgroundColor: Colors.chart.orange }]}
+              onPress={() => navigation.navigate('ExpensesTab', { openAddModal: true })}
+            >
               <MaterialCommunityIcons name="credit-card" size={24} color="#FFF" />
               <Text style={styles.actionText}>Record Expense</Text>
-            </View>
-            <View style={[styles.actionBtn, { backgroundColor: Colors.chart.green }]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionBtn, { backgroundColor: Colors.chart.green }]}
+              onPress={() => navigation.navigate('MoreTab', { screen: 'Debts', params: { openAddModal: true } })}
+            >
               <MaterialCommunityIcons name="currency-usd" size={24} color="#FFF" />
               <Text style={styles.actionText}>Add Debt</Text>
-            </View>
-            <View style={[styles.actionBtn, { backgroundColor: Colors.chart.blue }]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.actionBtn, { backgroundColor: Colors.chart.blue }]}
+              onPress={() => navigation.navigate('MoreTab', { screen: 'Reports' })}
+            >
               <MaterialCommunityIcons name="file-document-outline" size={24} color="#FFF" />
               <Text style={styles.actionText}>View Reports</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

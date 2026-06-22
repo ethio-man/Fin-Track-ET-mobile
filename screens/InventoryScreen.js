@@ -1,17 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import ProductCard from '../components/ProductCard';
+import RecordFormModal from '../components/RecordFormModal';
 import { mockInventory } from '../data/mockInventory';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function InventoryScreen() {
+export default function InventoryScreen({ route }) {
   const [search, setSearch] = useState('');
+  const [inventoryList, setInventoryList] = useState(mockInventory);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const filteredInventory = mockInventory.filter(product => 
+  useEffect(() => {
+    if (route?.params?.openAddModal) {
+      setModalVisible(true);
+    }
+  }, [route?.params]);
+
+  const inventoryFields = [
+    { name: 'name', label: 'Product Name', type: 'text', placeholder: 'e.g. Premium Coffee Beans' },
+    { name: 'sku', label: 'SKU', type: 'text', placeholder: 'e.g. BEV-CB-001' },
+    { name: 'category', label: 'Category', type: 'select', options: ['Beverages', 'Electronics', 'Furniture', 'Office Supplies', 'Stationery', 'Health & Safety', 'Kitchen'], defaultValue: 'Electronics' },
+    { name: 'sellingPrice', label: 'Selling Price', type: 'number', placeholder: '0.00' },
+    { name: 'stock', label: 'Initial Stock', type: 'number', placeholder: '0' },
+  ];
+
+  const handleAddProduct = (formData) => {
+    const newProduct = {
+      id: `PRD-0${Math.floor(100 + Math.random() * 900)}`,
+      name: formData.name || 'New Product',
+      sku: formData.sku || 'N/A',
+      category: formData.category || 'Electronics',
+      stock: parseInt(formData.stock, 10) || 0,
+      price: parseFloat(formData.sellingPrice) || 0,
+      cost: 0,
+      status: 'In Stock'
+    };
+    setInventoryList([newProduct, ...inventoryList]);
+  };
+
+  const filteredInventory = inventoryList.filter(product => 
     product.name.toLowerCase().includes(search.toLowerCase()) || 
     product.sku.toLowerCase().includes(search.toLowerCase())
   );
@@ -54,10 +85,10 @@ export default function InventoryScreen() {
               <Text style={[styles.alertTitle, { marginBottom: 16 }]}>Stock Levels</Text>
               <BarChart
                 data={{
-                  labels: mockInventory.slice(0, 4).map(p => p.name.split(' ')[0]), // Short names
+                  labels: inventoryList.slice(0, 4).map(p => p.name.split(' ')[0]), // Short names
                   datasets: [
                     {
-                      data: mockInventory.slice(0, 4).map(p => p.stock)
+                      data: inventoryList.slice(0, 4).map(p => p.stock)
                     }
                   ]
                 }}
@@ -91,9 +122,17 @@ export default function InventoryScreen() {
         }
       />
       
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
+
+      <RecordFormModal 
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleAddProduct}
+        title="Add Product"
+        fields={inventoryFields}
+      />
     </SafeAreaView>
   );
 }

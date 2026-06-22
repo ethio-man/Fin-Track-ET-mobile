@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import InvoiceDetailModal from '../components/InvoiceDetailModal';
+import RecordFormModal from '../components/RecordFormModal';
 
 const MOCK_INVOICES = [
   { id: 'INV-001', client: 'Abebe Bekele', date: 'Oct 12, 2023', amount: '4,500', status: 'Paid' },
@@ -11,10 +12,37 @@ const MOCK_INVOICES = [
   { id: 'INV-004', client: 'Beka Trading', date: 'Oct 20, 2023', amount: '8,500', status: 'Pending' },
 ];
 
-export default function InvoicesScreen() {
+export default function InvoicesScreen({ route }) {
   const [search, setSearch] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [invoicesList, setInvoicesList] = useState(MOCK_INVOICES);
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (route?.params?.openAddModal) {
+      setAddModalVisible(true);
+    }
+  }, [route?.params]);
+
+  const invoiceFields = [
+    { name: 'client', label: 'Client Name', type: 'text', placeholder: 'e.g. John Doe' },
+    { name: 'date', label: 'Date', type: 'date', placeholder: 'YYYY-MM-DD' },
+    { name: 'dueDate', label: 'Due Date', type: 'date', placeholder: 'YYYY-MM-DD' },
+    { name: 'amount', label: 'Amount', type: 'number', placeholder: '0.00' },
+    { name: 'status', label: 'Status', type: 'select', options: ['Draft', 'Pending', 'Paid', 'Overdue'], defaultValue: 'Draft' },
+  ];
+
+  const handleAddInvoice = (formData) => {
+    const newInvoice = {
+      id: `INV-00${Math.floor(10 + Math.random() * 90)}`,
+      client: formData.client || 'New Client',
+      date: formData.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      amount: formData.amount ? parseFloat(formData.amount).toLocaleString() : '0',
+      status: formData.status || 'Draft',
+    };
+    setInvoicesList([newInvoice, ...invoicesList]);
+  };
 
   const handleInvoicePress = (invoice) => {
     setSelectedInvoice(invoice);
@@ -30,7 +58,7 @@ export default function InvoicesScreen() {
     }
   };
 
-  const filteredInvoices = MOCK_INVOICES.filter(inv => 
+  const filteredInvoices = invoicesList.filter(inv => 
     inv.client.toLowerCase().includes(search.toLowerCase()) || 
     inv.id.toLowerCase().includes(search.toLowerCase())
   );
@@ -76,7 +104,7 @@ export default function InvoicesScreen() {
         )}
       />
 
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={styles.fab} onPress={() => setAddModalVisible(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
 
@@ -84,6 +112,14 @@ export default function InvoicesScreen() {
         visible={modalVisible} 
         invoice={selectedInvoice} 
         onClose={() => setModalVisible(false)} 
+      />
+
+      <RecordFormModal 
+        visible={isAddModalVisible}
+        onClose={() => setAddModalVisible(false)}
+        onSubmit={handleAddInvoice}
+        title="Create Invoice"
+        fields={invoiceFields}
       />
     </SafeAreaView>
   );

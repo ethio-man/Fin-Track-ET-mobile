@@ -25,6 +25,9 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "backgroundColor": "#0A1628"
-    }
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
   }
 }

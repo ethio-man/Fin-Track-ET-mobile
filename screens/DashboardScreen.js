@@ -6,12 +6,15 @@ import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import KPICard from '../components/KPICard';
 import TransactionItem from '../components/TransactionItem';
-import { kpiData, recentTransactions, weeklyProfitData, expenseBreakdown } from '../data/mockDashboard';
+import { useData } from '../context/DataContext';
+import { weeklyProfitData } from '../data/mockDashboard';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function DashboardScreen({ navigation }) {
   const { colors = Colors, currencyPrefix } = useApp();
+  const { dashboardData } = useData();
+  const { kpiData, recentTransactions, expenseBreakdown } = dashboardData;
   const styles = createStyles(colors);
   const [refreshing, setRefreshing] = React.useState(false);
 

@@ -3,7 +3,7 @@ export const mockSales = [
     id: '#29345',
     date: '07 Jan, 2022',
     time: '10:30 AM',
-    customer: 'James Dorgan',
+    customer: 'Yosef Anteneh',
     customerPhone: '+251 911 234567',
     items: [
       { id: '1', product: 'Premium Coffee Beans', quantity: 2, unitPrice: 450, subtotal: 900 },
@@ -21,7 +21,7 @@ export const mockSales = [
     id: '#23848',
     date: '07 Jan, 2022',
     time: '11:15 AM',
-    customer: 'Savannah Nguyen',
+    customer: 'Natnael Mekbib',
     customerPhone: '+251 911 345678',
     items: [
       { id: '1', product: 'Office Chair Deluxe', quantity: 3, unitPrice: 1200, subtotal: 3600 }
@@ -38,7 +38,7 @@ export const mockSales = [
     id: '#23466',
     date: '06 Jan, 2022',
     time: '2:45 PM',
-    customer: 'Dianne Russell',
+    customer: 'Abeba Negesse',
     customerPhone: '+251 911 456789',
     items: [
       { id: '1', product: 'Laptop Stand', quantity: 1, unitPrice: 850, subtotal: 850 }
@@ -55,7 +55,7 @@ export const mockSales = [
     id: '#19394',
     date: '05 Jan, 2022',
     time: '9:20 AM',
-    customer: 'Annette Black',
+    customer: 'Annet Getahun',
     customerPhone: '+251 911 567890',
     items: [
       { id: '1', product: 'Wireless Mouse', quantity: 2, unitPrice: 320, subtotal: 640 }
@@ -72,7 +72,7 @@ export const mockSales = [
     id: '#19217',
     date: '05 Jan, 2022',
     time: '3:10 PM',
-    customer: 'Jane Cooper',
+    customer: 'Fiker Alemayehu',
     customerPhone: '+251 911 678901',
     items: [
       { id: '1', product: 'Desk Organizer', quantity: 1, unitPrice: 450, subtotal: 450 }
@@ -99,14 +99,14 @@ export const mockProducts = [
 ];
 
 export const mockCustomers = [
-  'James Dorgan',
-  'Savannah Nguyen',
-  'Dianne Russell',
-  'Annette Black',
-  'Jane Cooper',
-  'Floyd Miles',
-  'Robert Fox',
-  'Jenny Wilson'
+  'Yosef Anteneh',
+  'Natnael Mekbib',
+  'Abeba Negesse',
+  'Annet Getahun',
+  'Fiker Alemayehu',
+  'Habtamu Jemberie',
+  'Birhanu Kebede',
+  'Lelise Wondimagegn'
 ];
 
 export const periodComparisonData = [

@@ -4,19 +4,19 @@ import { PieChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useData } from '../context/DataContext';
 import ExpenseItem from '../components/ExpenseItem';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
-import { mockExpenses } from '../data/mockExpenses';
 import { expenseBreakdown } from '../data/mockDashboard';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function ExpensesScreen({ route }) {
   const { colors = Colors, formatCurrency } = useApp();
+  const { expenses, addExpense } = useData();
   const styles = createStyles(colors);
   const [search, setSearch] = useState('');
-  const [expensesList, setExpensesList] = useState(mockExpenses);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState({});
@@ -42,7 +42,7 @@ export default function ExpensesScreen({ route }) {
       description: formData.description || 'New Expense',
       amount: parseFloat(formData.amount) || 0,
     };
-    setExpensesList([newExpense, ...expensesList]);
+    addExpense(newExpense);
   };
 
   const filterConfig = [
@@ -50,7 +50,7 @@ export default function ExpensesScreen({ route }) {
     { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
   ];
 
-  let filteredExpenses = expensesList.filter(expense => 
+  let filteredExpenses = expenses.filter(expense => 
     expense.description.toLowerCase().includes(search.toLowerCase()) || 
     expense.category.toLowerCase().includes(search.toLowerCase())
   );

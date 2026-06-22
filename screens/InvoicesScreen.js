@@ -3,23 +3,18 @@ import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextI
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useData } from '../context/DataContext';
 import InvoiceDetailModal from '../components/InvoiceDetailModal';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
 
-const MOCK_INVOICES = [
-  { id: 'INV-2024-001', client: 'Abebe Kebede', amount: '4,500', date: 'Oct 12, 2024', status: 'Paid' },
-  { id: 'INV-2024-002', client: 'Sara Tech Solutions', amount: '12,000', date: 'Oct 15, 2024', status: 'Pending' },
-  { id: 'INV-2024-003', client: 'XYZ Trading', amount: '8,750', date: 'Oct 05, 2024', status: 'Overdue' },
-];
-
 export default function InvoicesScreen({ route }) {
   const { colors = Colors, formatCurrency } = useApp();
+  const { invoices, addInvoice } = useData();
   const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [invoicesList, setInvoicesList] = useState(MOCK_INVOICES);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState({});
@@ -46,7 +41,7 @@ export default function InvoicesScreen({ route }) {
       amount: formData.amount ? parseFloat(formData.amount).toLocaleString() : '0',
       status: formData.status || 'Draft',
     };
-    setInvoicesList([newInvoice, ...invoicesList]);
+    addInvoice(newInvoice);
   };
 
   const handleInvoicePress = (invoice) => {
@@ -68,7 +63,7 @@ export default function InvoicesScreen({ route }) {
     { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
   ];
 
-  let filteredInvoices = invoicesList.filter(inv => 
+  let filteredInvoices = invoices.filter(inv => 
     inv.client.toLowerCase().includes(search.toLowerCase()) || 
     inv.id.toLowerCase().includes(search.toLowerCase())
   );

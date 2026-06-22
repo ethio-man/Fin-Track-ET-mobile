@@ -4,18 +4,19 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextI
 import { LineChart } from 'react-native-chart-kit';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useData } from '../context/DataContext';
 import SaleCard from '../components/SaleCard';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
-import { mockSales, periodComparisonData } from '../data/mockSales';
+import { periodComparisonData } from '../data/mockSales';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function SalesScreen({ route }) {
   const { colors = Colors, currencyPrefix } = useApp();
+  const { sales, addSale } = useData();
   const styles = createStyles(colors);
   const [search, setSearch] = useState('');
-  const [salesList, setSalesList] = useState(mockSales);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState({});
@@ -43,7 +44,7 @@ export default function SalesScreen({ route }) {
       status: 'complete',
       items: [],
     };
-    setSalesList([newSale, ...salesList]);
+    addSale(newSale);
   };
 
   const filterConfig = [
@@ -51,7 +52,7 @@ export default function SalesScreen({ route }) {
     { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
   ];
 
-  let filteredSales = salesList.filter(sale => 
+  let filteredSales = sales.filter(sale => 
     sale.customer.toLowerCase().includes(search.toLowerCase()) || 
     sale.id.toLowerCase().includes(search.toLowerCase())
   );

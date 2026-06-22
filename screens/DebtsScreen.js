@@ -5,21 +5,16 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useData } from '../context/DataContext';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
 
-const MOCK_DEBTS = [
-  { id: '1', name: 'Almaz Supply', amount: '3,200', dueDate: 'Oct 20, 2024', status: 'Pending', type: 'owe_me' },
-  { id: '2', name: 'Yared Getachew', amount: '500', dueDate: 'Oct 18, 2024', status: 'Pending', type: 'owe_me' },
-  { id: '3', name: 'Office Rent', amount: '8,000', dueDate: 'Oct 25, 2024', status: 'Pending', type: 'i_owe' },
-];
-
 export default function DebtsScreen({ route }) {
   const { colors = Colors, formatCurrency } = useApp();
+  const { debts, addDebt } = useData();
   const styles = createStyles(colors);
   const [tab, setTab] = useState('owe_me');
   const [search, setSearch] = useState('');
-  const [debtsList, setDebtsList] = useState(MOCK_DEBTS);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState({});
@@ -46,7 +41,7 @@ export default function DebtsScreen({ route }) {
       dueDate: formData.dueDate || new Date().toISOString().split('T')[0],
       status: 'Pending',
     };
-    setDebtsList([newDebt, ...debtsList]);
+    addDebt(newDebt);
   };
 
   const filterConfig = [
@@ -54,7 +49,7 @@ export default function DebtsScreen({ route }) {
     { name: 'sortAmount', label: 'Sort by Amount', options: ['Highest First', 'Lowest First'] }
   ];
 
-  let filteredDebts = debtsList.filter(debt => debt.type === tab);
+  let filteredDebts = debts.filter(debt => debt.type === tab);
 
   if (search) {
     filteredDebts = filteredDebts.filter(debt => debt.name.toLowerCase().includes(search.toLowerCase()));

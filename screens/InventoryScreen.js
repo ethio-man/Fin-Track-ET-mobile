@@ -4,18 +4,18 @@ import { BarChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useData } from '../context/DataContext';
 import ProductCard from '../components/ProductCard';
 import RecordFormModal from '../components/RecordFormModal';
 import FilterModal from '../components/FilterModal';
-import { mockInventory } from '../data/mockInventory';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function InventoryScreen({ route }) {
   const { colors = Colors } = useApp();
+  const { inventory, addProduct } = useData();
   const styles = createStyles(colors);
   const [search, setSearch] = useState('');
-  const [inventoryList, setInventoryList] = useState(mockInventory);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState({});
@@ -45,7 +45,7 @@ export default function InventoryScreen({ route }) {
       cost: 0,
       status: 'In Stock'
     };
-    setInventoryList([newProduct, ...inventoryList]);
+    addProduct(newProduct);
   };
 
   const filterConfig = [
@@ -53,7 +53,7 @@ export default function InventoryScreen({ route }) {
     { name: 'category', label: 'Category', options: ['Beverages', 'Electronics', 'Furniture', 'Office Supplies', 'Stationery', 'Health & Safety', 'Kitchen'] }
   ];
 
-  let filteredInventory = inventoryList.filter(product => 
+  let filteredInventory = inventory.filter(product => 
     product.name.toLowerCase().includes(search.toLowerCase()) || 
     product.sku.toLowerCase().includes(search.toLowerCase())
   );
@@ -108,10 +108,10 @@ export default function InventoryScreen({ route }) {
               <Text style={[styles.alertTitle, { marginBottom: 16 }]}>Stock Levels</Text>
               <BarChart
                 data={{
-                  labels: inventoryList.slice(0, 4).map(p => p.name.split(' ')[0]), // Short names
+                  labels: inventory.slice(0, 4).map(p => p.name.split(' ')[0]), // Short names
                   datasets: [
                     {
-                      data: inventoryList.slice(0, 4).map(p => p.stock)
+                      data: inventory.slice(0, 4).map(p => p.stock)
                     }
                   ]
                 }}

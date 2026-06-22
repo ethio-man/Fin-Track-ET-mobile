@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import Colors from '../theme/colors';
 
 const MOCK_DEBTS = [
@@ -13,6 +15,140 @@ export default function DebtsScreen() {
   const [tab, setTab] = useState('owe_me');
 
   const filteredDebts = MOCK_DEBTS.filter(debt => debt.type === tab);
+
+  const generateAgreement = async (debt) => {
+    try {
+      const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      
+      const isOweMe = debt.type === 'owe_me';
+      const creditorName = isOweMe ? 'FinanceTrack Business' : debt.name;
+      const debtorName = isOweMe ? debt.name : 'FinanceTrack Business';
+
+      const html = `
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: 'Times New Roman', Times, serif;
+                padding: 40px;
+                color: #000;
+                line-height: 1.6;
+                background-color: #f2f5f6;
+              }
+              h1 {
+                text-align: center;
+                color: #003366;
+                font-size: 20px;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: bold;
+              }
+              p {
+                font-size: 16px;
+                margin-bottom: 20px;
+                color: #111;
+              }
+              .parties {
+                margin-bottom: 30px;
+              }
+              .party {
+                font-size: 16px;
+                margin-bottom: 12px;
+                color: #000;
+              }
+              .party-role {
+                color: #333;
+              }
+              .amount-section {
+                margin-bottom: 30px;
+              }
+              .reference {
+                margin-bottom: 60px;
+                color: #003366;
+              }
+              .signatures {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 60px;
+              }
+              .signature-block {
+                width: 40%;
+              }
+              .signature-line {
+                border-bottom: 1px solid #777;
+                margin-bottom: 8px;
+                height: 30px;
+              }
+              .signature-label {
+                color: #003366;
+                font-size: 14px;
+              }
+              .bold-black {
+                font-weight: bold;
+                color: #000;
+              }
+              .bold-blue {
+                font-weight: bold;
+                color: #003366;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>PAYMENT AGREEMENT</h1>
+            
+            <p style="margin-bottom: 35px;">This agreement is entered into on <strong class="bold-black">${today}</strong> between:</p>
+            
+            <div class="parties" style="margin-bottom: 35px;">
+              <div class="party"><strong class="bold-blue">${creditorName}</strong> <span class="party-role">(Creditor)</span></div>
+              <div class="party"><strong class="bold-blue">${debtorName}</strong> — ${debt.phone || '+251 911 234 567'} <span class="party-role">(Debtor)</span></div>
+            </div>
+            
+            <div class="amount-section" style="margin-bottom: 35px;">
+              <p>The debtor agrees to repay the outstanding balance of <strong class="bold-black">ETB ${debt.amount}</strong> by <strong class="bold-black">${debt.dueDate}</strong>.</p>
+            </div>
+            
+            <div class="reference" style="margin-bottom: 60px;">
+              <p style="color: #003366;">Reference: ${debt.reference || 'Outstanding payment for office supplies delivery — Invoice #1201'}</p>
+            </div>
+            
+            <div class="signatures">
+              <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-label">Creditor Signature</div>
+              </div>
+              <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-label">Debtor Signature</div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      if (Platform.OS === 'web') {
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(html);
+          printWindow.document.close();
+          printWindow.focus();
+          
+          // Small delay to ensure content is rendered before printing
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+          }, 250);
+        } else {
+          Alert.alert('Error', 'Please allow pop-ups to print the agreement.');
+        }
+      } else {
+        await Print.printAsync({ html });
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Alert.alert('Error', 'Failed to generate the agreement document.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,9 +204,18 @@ export default function DebtsScreen() {
             </View>
             <View style={styles.debtRight}>
               <Text style={styles.debtAmount}>ETB {item.amount}</Text>
-              <TouchableOpacity style={styles.actionBtn}>
-                <Text style={styles.actionText}>{tab === 'owe_me' ? 'Remind' : 'Pay'}</Text>
-              </TouchableOpacity>
+              <View style={styles.actionsContainer}>
+                <TouchableOpacity 
+                  style={styles.iconBtn} 
+                  onPress={() => generateAgreement(item)}
+                  activeOpacity={0.7}
+                >
+                  <MaterialCommunityIcons name="file-document-outline" size={18} color={Colors.textSec} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionBtn}>
+                  <Text style={styles.actionText}>{tab === 'owe_me' ? 'Remind' : 'Pay'}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
@@ -189,6 +334,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconBtn: {
+    padding: 6,
+    backgroundColor: Colors.bgPanelInner,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   actionBtn: {
     backgroundColor: Colors.bgPanelInner,
     paddingHorizontal: 12,
@@ -196,6 +355,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: Colors.borderSubtle,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actionText: {
     color: Colors.textCore,

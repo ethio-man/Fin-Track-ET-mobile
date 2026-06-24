@@ -2,15 +2,11 @@
   "expo": {
     "name": "FinTrack ET",
     "slug": "fintrack-et",
+    "owner": "dagm0wi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/fintrack_logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0A1628"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fintrack.et"
@@ -20,14 +16,31 @@
         "foregroundImage": "./assets/fintrack_logo.png",
         "backgroundColor": "#0A1628"
       },
-      "package": "com.fintrack.et"
+      "package": "com.fintrack.et",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "backgroundColor": "#0A1628"
     },
     "plugins": [
-      "@react-native-community/datetimepicker"
-    ]
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/fintrack_logo.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0A1628"
+        }
+      ],
+      "expo-status-bar"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "068260b8-ed6f-45ee-aeab-7594e2c5c1ca"
+      }
+    }
   }
 }
